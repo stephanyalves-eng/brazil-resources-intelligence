@@ -64,13 +64,17 @@ FROM dedup d JOIN seed_amb_substance s USING (amb_substance)
 GROUP BY ALL;
 
 -- ---------- Facts (CFEM) ----------
--- Grain: month x UF x IBGE municipality x substance group x holder key. Excludes nothing; carries month status.
+-- Grain: month x UF x IBGE municipality x substance group x holder key. Carries month status and both gross and
+-- net (duplicate-excluded) values.
 CREATE OR REPLACE TABLE fct_cfem_monthly AS
 SELECT c.period_month, year(c.period_month) AS year, c.uf, c.ibge_municipality_code, c.substance_group,
        c.holder_type, c.holder_key, s.month_status,
-       sum(c.cfem_brl)                                         AS cfem_brl,
-       sum(c.cfem_brl) FILTER (c.is_identical_repeat)          AS cfem_brl_identical_repeats,
-       count(*)                                                AS n_lines
+       -- net value: excludes systematic duplicates (rule T13); every mart uses this column
+       coalesce(sum(c.cfem_brl) FILTER (NOT c.is_excluded_duplicate), 0) AS cfem_brl,
+       sum(c.cfem_brl)                                         AS cfem_brl_gross,
+       sum(c.cfem_brl) FILTER (c.is_excluded_duplicate)        AS cfem_brl_excluded_duplicates,
+       sum(c.cfem_brl) FILTER (c.is_identical_repeat AND NOT c.is_excluded_duplicate) AS cfem_brl_identical_repeats_kept,
+       count(*) FILTER (NOT c.is_excluded_duplicate)           AS n_lines
 FROM stg_cfem c
 JOIN stg_cfem_month_status s USING (period_month)
 GROUP BY ALL;

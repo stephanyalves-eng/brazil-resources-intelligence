@@ -24,8 +24,11 @@ SELECT (SELECT round(sum(sale_value_brl), 2) FROM stg_amb_beneficiada) AS stagin
        (SELECT max(n_units) FROM fct_amb_beneficiada) AS max_units_per_key;
 
 -- name: chk_cfem_value_reconciliation
-SELECT (SELECT round(sum(cfem_brl), 2) FROM stg_cfem)         AS staging_brl,
-       (SELECT round(sum(cfem_brl), 2) FROM fct_cfem_monthly) AS fact_brl,
+SELECT (SELECT round(sum(cfem_brl), 2) FROM stg_cfem)         AS staging_gross_brl,
+       (SELECT round(sum(cfem_brl), 2) FROM stg_cfem WHERE NOT is_excluded_duplicate) AS staging_net_brl,
+       (SELECT round(sum(cfem_brl_gross), 2) FROM fct_cfem_monthly) AS fact_gross_brl,
+       (SELECT round(sum(cfem_brl_excluded_duplicates), 2) FROM fct_cfem_monthly) AS excluded_duplicates_brl,
+       (SELECT round(sum(cfem_brl), 2) FROM fct_cfem_monthly) AS fact_net_brl,
        (SELECT round(sum(cfem_brl), 2) FROM v_cfem_usable)    AS usable_brl,
        (SELECT round(sum(cfem_brl), 2) FROM mart_cfem_uf_year) AS mart_uf_brl,
        (SELECT round(sum(cfem_brl), 2) FROM mart_cfem_monthly) AS mart_monthly_brl,

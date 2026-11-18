@@ -108,7 +108,23 @@ SELECT
 FROM typed t
 LEFT JOIN seed_substance_map m ON m.cfem_substance = t.cfem_substance;
 
+-- ---------- Systematic duplicate months (rule T13, evidence in docs/ANALYSIS_FINDINGS.md) ----------
+-- Identical repeats are normally rare (median 0.007 % of a month's value) and are kept, because without a slip ID
+-- a genuine repeated payment cannot be ruled out. When repeats exceed 5 % of a month's value the pattern is
+-- systematic (Feb 2024: 32 %, 774 lines duplicated exactly, same slip timestamps) and the repeats are excluded.
+CREATE OR REPLACE TABLE stg_cfem_repeat_month AS
+SELECT period_month,
+       100 * coalesce(sum(cfem_brl) FILTER (is_identical_repeat), 0) / sum(cfem_brl) AS repeat_value_pct,
+       100 * coalesce(sum(cfem_brl) FILTER (is_identical_repeat), 0) / sum(cfem_brl) > 5 AS is_systematic
+FROM stg_cfem GROUP BY 1;
+
+ALTER TABLE stg_cfem ADD COLUMN is_excluded_duplicate BOOLEAN DEFAULT false;
+UPDATE stg_cfem SET is_excluded_duplicate = true
+WHERE is_identical_repeat
+  AND period_month IN (SELECT period_month FROM stg_cfem_repeat_month WHERE is_systematic);
+
 -- ---------- Month completeness (data-driven) ----------
+-- Uses gross values; duplicates only exist in months that are otherwise complete, so the status is unaffected.
 -- A month is 'incomplete' when its national total is < 50 % of the median of the 12 preceding months.
 -- Years before 2004 are 'partial_history' (2002: 10 rows; 2003: 8 months).
 CREATE OR REPLACE TABLE stg_cfem_month_status AS

@@ -50,3 +50,17 @@ See [SOURCE_SELECTION_REPORT.md](SOURCE_SELECTION_REPORT.md).
 | Result | Mining pipeline ~7 s, oil & gas pipeline ~5 s, both reproducible from raw with one command |
 | Pending | Company names for CNPJ roots are not in CFEM (only the ID). Mapping rows tagged `judgment` should be reviewed by a domain expert. pyarrow is not used |
 | Next | Phase 6 — exploratory and statistical analysis |
+
+## Phase 6 — Exploratory and statistical analysis (2026-11-18) ✅
+
+| Item | Content |
+|---|---|
+| Objective | Answer the business questions with verifiable numbers and interpretable methods |
+| Mining actions | `sql/30_analysis.sql` (Q1–Q14), `31_analysis_followups.sql`, `32_repeat_month_scan.sql`, `33_state_drivers.sql`, `src/lookup_company_names.py` → `seeds/company_names.csv` (25 largest CFEM legal entities, BrasilAPI / Receita Federal, all resolved) |
+| Oil & gas actions | `oilgas/eda.py` (annual, descriptive, log-linear trend, regional HHI, onshore/offshore, seasonality with permutation test, gas utilisation), `oilgas/stats_analysis.py` (robust-z anomalies, volatility regimes, DP piecewise-linear structural breaks with BIC), `oilgas/charts.py` (5 PNGs in `assets/`), `_check_breaks.py` (robustness) |
+| Corrections made during the phase | **New rule T13** (mining): Feb 2024 CFEM holds a systematic duplicate export (32.4 % of that month's value). Repeats are excluded only in months above 5 %, removing R$ 296.3 M, and 2024 CFEM growth goes from +12.8 % (gross) to +8.4 % (net). **Break detection** switched from the smoothed to the raw monthly series, because BIC overfit on the smoothed input. **Wording corrections** after re-checking: iron-share "lowest since" and the CFEM ratio step-up |
+| Findings | `mining-intelligence/docs/ANALYSIS_FINDINGS.md` (F1–F10, DQ1–DQ3), `oil-gas-intelligence/docs/ANALYSIS_FINDINGS.md` (F1–F9) |
+| Methodology | `docs/ANALYSIS_METHODOLOGY.md` in each project |
+| Tests | Analysis outputs were re-derived and spot-checked against source queries. **The pytest suite has not been written yet** (Phase 7) |
+| Decisions | No forecast (no business question needs one, and the regime changes make it unreliable). Company = legal entity, not group. ES iron ore treated as a reporting inconsistency |
+| Next | Phase 7 — automated QA test suite and TEST_REPORT |
