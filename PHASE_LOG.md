@@ -88,3 +88,15 @@ See [SOURCE_SELECTION_REPORT.md](SOURCE_SELECTION_REPORT.md).
 | Fixes found by the export tests | Oil & gas: `is_new_peak` flagged the first month of every series (feature bug, fixed). Mining: impossible IBGE codes and blank-UF municipality rows (staging rule tightened, UF derived from the code prefix) |
 | Not done | No Tableau workbook has been created (Phase 9 gives the specification and build guide). No municipal map (no coordinates in the sources) |
 | Next | Phase 9 — dashboard specification, KPI definitions, Tableau build guide |
+
+## Phase 9 — Dashboard specification (2026-11-18) ✅
+
+| Item | Content |
+|---|---|
+| Objective | A complete, reproducible specification for both Tableau Public dashboards in the SA Design System |
+| Design system | Tokens found in `C:\Tableau\FAB\FAB Supplier Concentration.html`, which declares "Stephany Alves Design System tokens". Documented **without invented values** in `shared/design-system/SA_DESIGN_SYSTEM_TABLEAU.md`, plus `Preferences.tps` with 5 colour palettes. The fonts use the fallbacks the tokens declare (Georgia / Arial / Consolas), because Tableau Public renders only web-safe fonts. `DESIGN_SYSTEM_REQUIRED.md` was not needed |
+| Mining | `docs/KPI_DEFINITIONS.md` (K1–K19 with reference values), `docs/TABLEAU_BUILD_GUIDE.md` (connection, field settings, 4 parameters, 20+ calculated fields, 19 sheets, 4 dashboards with desktop wireframes and phone layouts, interactions, tooltips, verification checklist, publishing) |
+| Oil & gas | `docs/KPI_DEFINITIONS.md` (K1–K20), `docs/TABLEAU_BUILD_GUIDE.md` (level-specific data-source copies against double counting, 4 parameters, calculated fields, 23 sheets, 5 dashboards, phone layouts, checklist) |
+| Tests | Reference values in the checklists were re-read from the exported CSVs. The guides are **not executed in Tableau**: no workbook exists |
+| Not done | Building and publishing the workbooks in Tableau Public (manual, and your decision: published workbooks are public) |
+| Next | Phase 10 — README, LIMITATIONS, CHANGELOG, DATA_SOURCES, portfolio texts |
