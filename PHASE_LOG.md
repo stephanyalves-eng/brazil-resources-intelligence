@@ -64,3 +64,14 @@ See [SOURCE_SELECTION_REPORT.md](SOURCE_SELECTION_REPORT.md).
 | Tests | Analysis outputs were re-derived and spot-checked against source queries. **The pytest suite has not been written yet** (Phase 7) |
 | Decisions | No forecast (no business question needs one, and the regime changes make it unreliable). Company = legal entity, not group. ES iron ore treated as a reporting inconsistency |
 | Next | Phase 7 — automated QA test suite and TEST_REPORT |
+
+## Phase 7 — Data quality validation (2026-11-18) ✅
+
+| Item | Content |
+|---|---|
+| Objective | Automated, executed tests for every QA requirement in §5 of the brief |
+| Files created | `mining-intelligence/tests/{conftest,test_raw_and_schema,test_staging_quality,test_marts_integrity}.py`, `oil-gas-intelligence/tests/{conftest,test_units,test_data_quality}.py`, `tests/results/{pytest_output.txt,junit.xml}`, `docs/TEST_REPORT.md` and `docs/DATA_QUALITY_REPORT.md` in each project, `src/oilgas/_check_balance_diff.py` |
+| Tests executed | Mining **56 / 56 passed**. Oil & gas **68 / 68 passed** (2026-11-18 16:05). 0 skipped, 0 xfail |
+| Failures found and resolved | Harness: DuckDB 2.0 API change and an invalid nested window (test code). Test scope: pre-2000 gas balance NaN. **Real findings:** T13 also fires in Aug 2002 (docs said "only Feb 2024"); 2002–03 spine gaps; national gas balance is 307 (not 308) of 321 months because of unpublished Dec 2024 cells. Docs corrected |
+| Not covered | Tableau export files (they do not exist yet; tests come in Phase 8) |
+| Next | Phase 8 — Tableau-ready datasets (+ export tests) |
