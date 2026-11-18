@@ -1,0 +1,110 @@
+table,column,tableau_type,unit,description
+dim_uf,uf,String,,Two-letter state code (Brazilian UF); geographic role State/Province
+dim_uf,uf_name,String,,State name
+dim_uf,region,String,,Macro-region (North / Northeast / Central-West / Southeast / South)
+dim_uf,ibge_uf_code,Number (whole),,IBGE two-digit state code
+dim_uf,iso_3166_2,String,,ISO 3166-2 code (BR-XX); alternative geocoding key
+dim_substance,substance_group,String,,Analytical commodity group shared by AMB and CFEM (seeds/substance_map.csv)
+dim_substance,substance_class_en,String,,Metallic / Non-metallic / Energy / Gems & diamonds / Unclassified
+dim_substance,has_amb_equivalent,Boolean,,True if the group exists in AMB production data
+amb_national_year,year,Number (whole),,AMB base year (2010-2025)
+amb_national_year,sale_value_brl,Number (decimal),R$ nominal,Value of beneficiated mineral sales (AMB) - Brazil total
+amb_national_year,value_yoy,Number (decimal),ratio,Year-on-year change of sale_value_brl (0.10 = +10 %); NULL for 2010
+amb_national_year,n_ufs,Number (whole),count,States with any reported value
+amb_national_year,n_substance_groups,Number (whole),count,Substance groups with any reported value
+amb_uf_year,year,Number (whole),,AMB base year
+amb_uf_year,uf,String,,State code (joins dim_uf)
+amb_uf_year,uf_name,String,,State name
+amb_uf_year,region,String,,Macro-region
+amb_uf_year,sale_value_brl,Number (decimal),R$ nominal,Value of beneficiated sales in the state (all substances)
+amb_uf_year,n_substance_groups,Number (whole),count,Substance groups reported in the state
+amb_uf_year,share_of_national,Number (decimal),ratio,State share of national value in the year
+amb_uf_year,rank_in_year,Number (whole),rank,1 = largest state in the year
+amb_uf_year,cumulative_share,Number (decimal),ratio,Running share by rank (Pareto)
+amb_uf_year,value_yoy,Number (decimal),ratio,YoY change; NULL when the previous calendar year is missing or zero
+amb_uf_year,rank_change,Number (whole),rank,Rank this year minus rank previous year (negative = moved up)
+amb_substance_year,year,Number (whole),,AMB base year
+amb_substance_year,substance_group,String,,Commodity group (joins dim_substance)
+amb_substance_year,substance_class_en,String,,Commodity class
+amb_substance_year,sale_value_brl,Number (decimal),R$ nominal,Value of beneficiated sales of the group (Brazil)
+amb_substance_year,production_qty,Number (decimal),see unit,Beneficiated production; NULL when the group mixes units
+amb_substance_year,unit,String,,Unit of production_qty (t / kg / ct)
+amb_substance_year,n_producing_ufs,Number (whole),count,States reporting the group
+amb_substance_year,share_of_national,Number (decimal),ratio,Group share of national value
+amb_substance_year,rank_in_year,Number (whole),rank,1 = largest group in the year
+amb_substance_year,cumulative_share,Number (decimal),ratio,Running share by rank (Pareto)
+amb_substance_year,value_yoy,Number (decimal),ratio,YoY change of value; NULL across gaps or zero base
+amb_substance_year,qty_yoy,Number (decimal),ratio,YoY change of production quantity; same guard
+amb_uf_substance_year,year,Number (whole),,AMB base year
+amb_uf_substance_year,uf,String,,State code
+amb_uf_substance_year,substance_group,String,,Commodity group
+amb_uf_substance_year,substance_class_en,String,,Commodity class
+amb_uf_substance_year,sale_value_brl,Number (decimal),R$ nominal,Value of beneficiated sales
+amb_uf_substance_year,production_qty,Number (decimal),see unit,Beneficiated production; NULL when units are mixed
+amb_uf_substance_year,unit,String,,Unit of production_qty
+amb_uf_substance_year,value_yoy,Number (decimal),ratio,YoY change of value; NULL across gaps or zero base
+amb_uf_substance_year,qty_yoy,Number (decimal),ratio,YoY change of quantity; same guard
+amb_uf_substance_year,uf_share_of_substance,Number (decimal),ratio,State share of the group's national value (geographic concentration input)
+amb_uf_substance_year,share_of_national,Number (decimal),ratio,Row share of total national value
+amb_uf_substance_year,dq_flag_intermittent_series,Boolean,,True for ES iron ore - intermittent reporting (data-quality caveat DQ2)
+amb_price_volume,year,Number (whole),,AMB base year
+amb_price_volume,substance_group,String,,Commodity group (single-unit groups only)
+amb_price_volume,unit,String,,Unit of sale_qty
+amb_price_volume,sale_value_brl,Number (decimal),R$ nominal,Value of beneficiated sales
+amb_price_volume,sale_qty,Number (decimal),see unit,Quantity sold
+amb_price_volume,unit_value_brl,Number (decimal),R$ per unit,Implied unit value = value / quantity sold
+amb_price_volume,volume_effect_logpts,Number (decimal),log-points,100 x ln(Q / Q previous year); NULL when not computable
+amb_price_volume,unit_value_effect_logpts,Number (decimal),log-points,100 x ln(P / P previous year); volume + unit value effects = total log change
+cfem_uf_substance_year,year,Number (whole),,CFEM collection year (2004-2026)
+cfem_uf_substance_year,year_status,String,,complete / 2026 YTD Jan-Jun (provisional)
+cfem_uf_substance_year,uf,String,,State of the mining activity; N/A = not reported
+cfem_uf_substance_year,substance_group,String,,Commodity group
+cfem_uf_substance_year,cfem_brl,Number (decimal),R$ nominal,CFEM royalty collected (not revenue); Feb 2024 duplicates removed
+cfem_uf_substance_year,n_holders,Number (whole),count,Distinct paying holders (company = CNPJ root)
+cfem_uf_substance_year,n_months,Number (whole),count,Months with collections in the year
+cfem_municipality_year,year,Number (whole),,CFEM collection year
+cfem_municipality_year,year_status,String,,complete / 2026 YTD Jan-Jun (provisional)
+cfem_municipality_year,ibge_municipality_code,String,,7-digit IBGE municipality code (keep as String)
+cfem_municipality_year,municipality_name,String,,Municipality name (most frequent spelling in CFEM)
+cfem_municipality_year,uf,String,,State code
+cfem_municipality_year,main_substance_group,String,,Group with the largest single collection line in the year
+cfem_municipality_year,cfem_brl,Number (decimal),R$ nominal,CFEM collected in the municipality
+cfem_municipality_year,rank_in_year,Number (whole),rank,1 = largest municipality in the year
+cfem_monthly,period_month,Date,,First day of the collection month (2004-01 to 2026-06)
+cfem_monthly,month_status,String,,complete / provisional
+cfem_monthly,substance_group,String,,Commodity group
+cfem_monthly,cfem_brl,Number (decimal),R$ nominal,CFEM collected in the month (0 = no collection that month)
+cfem_monthly,cfem_brl_rolling_12m,Number (decimal),R$ nominal,Sum of the last 12 months; NULL until 12 months exist
+cfem_monthly,cfem_brl_same_month_ly,Number (decimal),R$ nominal,Same month one year earlier; NULL in the first 12 months
+cfem_company_substance_year,year,Number (whole),,CFEM collection year
+cfem_company_substance_year,year_status,String,,complete / 2026 YTD Jan-Jun (provisional)
+cfem_company_substance_year,substance_group,String,,Commodity group (shares are within the group)
+cfem_company_substance_year,rank,Number (whole),rank,1-10 = top payers; 11 = aggregated remainder
+cfem_company_substance_year,company_key,String,,CNPJ root (8 digits; keep as String - leading zeros) or OTHERS / INDIVIDUALS / UNIDENTIFIED
+cfem_company_substance_year,holder_type,String,,PJ (company) / PF (individuals; CPF masked) / UNKNOWN / MIXED (remainder row)
+cfem_company_substance_year,company_name,String,,Registered legal name (Receita Federal via BrasilAPI) or 'CNPJ root ...' when not looked up
+cfem_company_substance_year,cfem_brl,Number (decimal),R$ nominal,CFEM collected
+cfem_company_substance_year,share_in_substance,Number (decimal),ratio,Share of the group's CFEM in the year
+cfem_company_substance_year,cumulative_share,Number (decimal),ratio,Running share by rank
+concentration,year,Number (whole),,Year
+concentration,concentration_type,String,,geographic (UF; AMB value) / commodity mix (AMB value) / business (CNPJ root; CFEM)
+concentration,scope,String,,Substance group; 'All substances' or 'Brazil' for totals
+concentration,n_participants,Number (whole),count,Number of states / groups / companies with value > 0
+concentration,hhi,Number (decimal),index 0-10000,Herfindahl-Hirschman Index = sum of squared % shares
+concentration,cr1_pct,Number (decimal),%,Share of the largest participant
+concentration,cr4_pct,Number (decimal),%,Share of the four largest participants
+concentration,top_participant,String,,Largest participant (state name / group / company legal name)
+concentration,total_value_brl,Number (decimal),R$ nominal,Total value over which shares are computed
+concentration,hhi_band,String,,unconcentrated (<1500) / moderately (1500-2500) / highly concentrated (>2500); US DOJ/FTC 2010 reference
+amb_cfem_uf_substance_year,year,Number (whole),,Year (2010-2025)
+amb_cfem_uf_substance_year,uf,String,,State code
+amb_cfem_uf_substance_year,substance_group,String,,Commodity group with an AMB equivalent
+amb_cfem_uf_substance_year,amb_sale_value_brl,Number (decimal),R$ nominal,AMB beneficiated sales value; NULL if CFEM-only
+amb_cfem_uf_substance_year,cfem_brl,Number (decimal),R$ nominal,CFEM collected; NULL if AMB-only
+amb_cfem_uf_substance_year,cfem_to_amb_sales_ratio,Number (decimal),ratio,CFEM / AMB value - indicator only (different base and timing)
+amb_cfem_uf_substance_year,match_status,String,,both / amb_only / cfem_only
+metadata,source_key,String,,Short source identifier
+metadata,source_name,String,,Source name
+metadata,url,String,,Official URL or local file
+metadata,coverage,String,,Period covered
+metadata,note,String,,Definition and caveats

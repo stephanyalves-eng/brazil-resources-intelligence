@@ -1,0 +1,5 @@
+source_key,source_name,url,coverage,note
+ANP monthly,ANP - Produção de petróleo e gás natural por estado e localização,https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/producao-de-petroleo-e-gas-natural-por-estado-e-localizacao,1997-01 to 2026-09 (gas uses from 2000-01),"Volumes: oil/NGL m3, gas 1000 m3; 2026 provisional"
+ANP Anuário 2026,"Anuário Estatístico 2026 - tables 2.14, 2.19, 2.21, 2.22",https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/anuario/anuario-estatistico-2026-dados-abertos,2016-2025 (annual),Used for reconciliation only (<= 0.04 % national deviation)
+Conversion,1 m3 = 6.28981 bbl,,,Applied only in oil_daily_avg_bbl; oil and gas are never summed
+Snapshot,Raw files downloaded,data/raw/MANIFEST.csv,2026-11-18,SHA-256 of every raw file recorded

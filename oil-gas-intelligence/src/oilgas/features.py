@@ -83,7 +83,9 @@ def add_time_features(df: pd.DataFrame) -> pd.DataFrame:
         peak = d.cummax()
         g["historical_peak_daily_avg"] = peak
         g["pct_of_historical_peak"] = safe_ratio(d, peak)
-        g["is_new_peak"] = (d >= peak) & d.notna() & (d > 0) & (d > d.shift(1).cummax().fillna(-np.inf))
+        prior_peak = d.shift(1).cummax()
+        # a new peak needs a prior history to beat: the first observation is never flagged
+        g["is_new_peak"] = d.notna() & (d > 0) & prior_peak.notna() & (d > prior_peak)
 
         g["volatility_12m"] = g["daily_avg_mom"].rolling(12, min_periods=12).std()
 

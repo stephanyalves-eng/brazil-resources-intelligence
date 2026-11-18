@@ -1,0 +1,5 @@
+source_key,source_name,url,coverage,note
+AMB,"ANM - Anuário Mineral Brasileiro, Produção Beneficiada",https://dadosabertos.anm.gov.br/AMB/Producao_Beneficiada.csv,2010-2025 (base years),Value of beneficiated sales reported in the RAL; nominal R$
+CFEM,ANM - CFEM Arrecadação,https://dadosabertos.anm.gov.br/CFEM/CFEM_Arrecadacao.csv,2004-01 to 2026-06 (usable months),Royalty collected (not revenue); nominal R$; Feb 2024 duplicate export removed
+Company names,Receita Federal CNPJ registry via BrasilAPI,https://brasilapi.com.br,retrieved 2026-11-18,Legal entity names for the 25 largest CFEM payers (2021-2025)
+Snapshot,Raw files downloaded,data/raw/MANIFEST.csv,2026-11-18,SHA-256 of every raw file recorded

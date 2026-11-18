@@ -75,3 +75,16 @@ See [SOURCE_SELECTION_REPORT.md](SOURCE_SELECTION_REPORT.md).
 | Failures found and resolved | Harness: DuckDB 2.0 API change and an invalid nested window (test code). Test scope: pre-2000 gas balance NaN. **Real findings:** T13 also fires in Aug 2002 (docs said "only Feb 2024"); 2002–03 spine gaps; national gas balance is 307 (not 308) of 321 months because of unpublished Dec 2024 cells. Docs corrected |
 | Not covered | Tableau export files (they do not exist yet; tests come in Phase 8) |
 | Next | Phase 8 — Tableau-ready datasets (+ export tests) |
+
+## Phase 8 — Tableau-ready datasets (2026-11-18) ✅
+
+| Item | Content |
+|---|---|
+| Objective | Slim, documented, tested extracts for Tableau Public |
+| Mining | `sql/40_tableau_export.sql` (added to `run_pipeline.ps1`) writes 14 CSVs to `tableau/data/` (about 97 k rows, 6.7 MB): 2 dimensions, AMB national/UF/substance/UF×substance/price-volume, CFEM UF×substance/municipality/monthly/company top 10 + remainder (with legal names), concentration, AMB×CFEM, metadata |
+| Oil & gas | `oilgas/tableau_export.py` (pipeline step `export`; the pipeline now runs profile → clean → features → eda → stats → charts → export) writes 9 CSVs (about 41 k rows, 8.7 MB) |
+| Documentation | `tableau/data_dictionary.csv` (single source, 109 + 103 columns) → `docs/DATA_DICTIONARY.md` via `shared/render_dictionary.py`; `docs/TABLEAU_DATA_MODEL.md` (Mermaid ER, relationships, grain and safe-aggregation rules, field settings) in each project |
+| Tests | New `test_tableau_exports.py` in both projects. **Mining 117/117, oil & gas 90/90 passed** (2026-11-18 16:14) |
+| Fixes found by the export tests | Oil & gas: `is_new_peak` flagged the first month of every series (feature bug, fixed). Mining: impossible IBGE codes and blank-UF municipality rows (staging rule tightened, UF derived from the code prefix) |
+| Not done | No Tableau workbook has been created (Phase 9 gives the specification and build guide). No municipal map (no coordinates in the sources) |
+| Next | Phase 9 — dashboard specification, KPI definitions, Tableau build guide |

@@ -78,6 +78,18 @@ def test_monthly_mart_is_dense(con):
     assert n_months == 12 * 22 + 6   # 2004-01 .. 2026-06
 
 
+def test_ibge_codes_have_valid_state_prefix(con):
+    bad = scalar(con, "SELECT count(*) FROM stg_cfem WHERE ibge_municipality_code IS NOT NULL "
+                      "AND left(ibge_municipality_code, 2) NOT IN (SELECT ibge_uf_code FROM seed_uf)")
+    assert bad == 0
+
+
+def test_municipality_uf_matches_code_prefix(con):
+    bad = scalar(con, "SELECT count(*) FROM mart_cfem_municipality_year m JOIN seed_uf u USING (uf) "
+                      "WHERE left(m.ibge_municipality_code, 2) <> u.ibge_uf_code")
+    assert bad == 0 and scalar(con, "SELECT count(*) FROM mart_cfem_municipality_year WHERE uf IS NULL") == 0
+
+
 def test_holder_key_assignment(con):
     assert scalar(con, "SELECT count(*) FROM stg_cfem WHERE holder_type = 'PJ' AND cnpj IS NOT NULL AND holder_key <> left(cnpj, 8)") == 0
     assert scalar(con, "SELECT count(*) FROM stg_cfem WHERE holder_type = 'PF' AND holder_key <> 'INDIVIDUALS (masked CPF)'") == 0

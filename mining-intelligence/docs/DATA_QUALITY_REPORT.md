@@ -32,4 +32,5 @@ Snapshot: ANM files downloaded 2026-11-18 (see `data/raw/MANIFEST.csv`). Automat
 | M-10 | CFEM month spine gaps 2002–2003 | Low | Phase 7 test | Partial history excluded | — |
 | M-11 | AC absent from AMB Beneficiada | Low | Phase 2 | None (as published) | — |
 | M-12 | CFEM has no company names | Medium | Phase 2 | Top 25 legal names from Receita Federal (BrasilAPI) | Legal entity ≠ economic group |
+| M-14 | IBGE municipality codes with an impossible state prefix (`9317710`, `9205200`), plus 2004 lines with a valid code but blank UF and name | Low | Phase 8 export test | Code accepted only with a real IBGE state prefix; UF derived from the code | 1,624 lines (0.07 %) cannot be placed on a municipality; they stay in state and national totals where a UF exists |
 | M-13 | Dataset licence not stated | Low | Phase 1 | Attribution to ANM. Decreto 8.777/2016 cited | Recorded in LIMITATIONS |

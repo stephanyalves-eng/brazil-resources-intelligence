@@ -196,9 +196,13 @@ FROM v_cfem_usable GROUP BY year, substance_group;
 -- Grain: year x IBGE municipality (map layer). Municipality name = most frequent spelling.
 CREATE OR REPLACE TABLE mart_cfem_municipality_year AS
 WITH names AS (
-  SELECT ibge_municipality_code, arg_max(municipality, n) AS municipality_name, arg_max(uf, n) AS uf
-  FROM (SELECT ibge_municipality_code, municipality, uf, count(*) AS n FROM stg_cfem
-        WHERE ibge_municipality_code IS NOT NULL GROUP BY ALL)
+  -- UF is derived from the IBGE code prefix (authoritative), so lines with a blank UF/name still place correctly
+  SELECT m.ibge_municipality_code,
+         coalesce(arg_max(m.municipality, m.n) FILTER (m.municipality IS NOT NULL), 'IBGE ' || m.ibge_municipality_code) AS municipality_name,
+         any_value(u.uf) AS uf
+  FROM (SELECT ibge_municipality_code, municipality, count(*) AS n FROM stg_cfem
+        WHERE ibge_municipality_code IS NOT NULL GROUP BY ALL) m
+  JOIN seed_uf u ON u.ibge_uf_code = left(m.ibge_municipality_code, 2)
   GROUP BY 1
 )
 SELECT f.year, cfem_year_status(f.year) AS year_status, f.ibge_municipality_code, n.municipality_name, n.uf,

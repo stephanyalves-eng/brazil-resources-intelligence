@@ -1,0 +1,28 @@
+uf,uf_name,region,ibge_uf_code,iso_3166_2
+AC,Acre,North,12,BR-AC
+AL,Alagoas,Northeast,27,BR-AL
+AM,Amazonas,North,13,BR-AM
+AP,Amapá,North,16,BR-AP
+BA,Bahia,Northeast,29,BR-BA
+CE,Ceará,Northeast,23,BR-CE
+DF,Distrito Federal,Central-West,53,BR-DF
+ES,Espírito Santo,Southeast,32,BR-ES
+GO,Goiás,Central-West,52,BR-GO
+MA,Maranhão,Northeast,21,BR-MA
+MG,Minas Gerais,Southeast,31,BR-MG
+MS,Mato Grosso do Sul,Central-West,50,BR-MS
+MT,Mato Grosso,Central-West,51,BR-MT
+PA,Pará,North,15,BR-PA
+PB,Paraíba,Northeast,25,BR-PB
+PE,Pernambuco,Northeast,26,BR-PE
+PI,Piauí,Northeast,22,BR-PI
+PR,Paraná,South,41,BR-PR
+RJ,Rio de Janeiro,Southeast,33,BR-RJ
+RN,Rio Grande do Norte,Northeast,24,BR-RN
+RO,Rondônia,North,11,BR-RO
+RR,Roraima,North,14,BR-RR
+RS,Rio Grande do Sul,South,43,BR-RS
+SC,Santa Catarina,South,42,BR-SC
+SE,Sergipe,Northeast,28,BR-SE
+SP,São Paulo,Southeast,35,BR-SP
+TO,Tocantins,North,17,BR-TO

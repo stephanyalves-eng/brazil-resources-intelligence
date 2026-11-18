@@ -1,0 +1,59 @@
+substance_group,substance_class_en,has_amb_equivalent
+Asbestos,Non-metallic,true
+Barite,Non-metallic,true
+Bauxite (aluminium),Metallic,true
+Beryllium,Metallic,true
+Cadmium,Metallic,true
+Chromium,Metallic,true
+Clays,Non-metallic,true
+Coal,Energy,true
+Cobalt,Metallic,true
+Columbite-tantalite,Metallic,true
+Copper,Metallic,true
+Crushed stone & gravel,Non-metallic,true
+Diamond,Gems & diamonds,true
+Diatomite,Non-metallic,true
+Dimension stone,Non-metallic,true
+Dolomite & magnesite,Non-metallic,true
+Feldspar & nepheline syenite,Non-metallic,true
+Fluorite,Non-metallic,true
+Gemstones,Gems & diamonds,true
+Gold,Metallic,true
+Graphite,Non-metallic,true
+Gypsum,Non-metallic,true
+Industrial sand,Non-metallic,true
+Iron ore,Metallic,true
+Kaolin,Non-metallic,true
+Kyanite & refractory minerals,Non-metallic,true
+Lead,Metallic,true
+Limestone,Non-metallic,true
+Lithium,Metallic,true
+Manganese,Metallic,true
+Mica,Non-metallic,true
+Mineral water,Unclassified,false
+Molybdenum,Metallic,true
+Nickel,Metallic,true
+Niobium,Metallic,true
+Other (unmapped),Unclassified,false
+Other industrial minerals,Non-metallic,true
+Peat,Energy,true
+Phosphate,Non-metallic,true
+Platinum group,Metallic,true
+Potash,Non-metallic,true
+Quartz crystal,Non-metallic,true
+Rare earths & monazite,Metallic,true
+Rock salt,Non-metallic,true
+Saibro (weathered rock fill),Non-metallic,true
+Sand (construction),Non-metallic,true
+Silver,Metallic,true
+Stone - use unspecified,Unclassified,false
+Sulphur,Non-metallic,true
+Talc & mineral fillers,Non-metallic,true
+Tin,Metallic,true
+Titanium,Metallic,true
+Tungsten,Metallic,true
+Uranium,Energy,true
+Vanadium,Metallic,true
+Vermiculite & perlite,Non-metallic,true
+Zinc,Metallic,true
+Zirconium,Metallic,true

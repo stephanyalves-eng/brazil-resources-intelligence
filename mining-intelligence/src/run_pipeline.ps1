@@ -18,3 +18,6 @@ $db = 'data\interim\mining.duckdb'
 if ($LASTEXITCODE -ne 0) { throw "SQL build failed" }
 & $Py src\run_sql.py sql\19_staging_checks.sql sql\29_mart_checks.sql --db $db --out data\interim\checks
 if ($LASTEXITCODE -ne 0) { throw "Checks failed" }
+New-Item -ItemType Directory -Force tableau\data | Out-Null
+& $Py src\run_sql.py sql\40_tableau_export.sql --db $db
+if ($LASTEXITCODE -ne 0) { throw "Tableau export failed" }

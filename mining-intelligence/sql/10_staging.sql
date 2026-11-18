@@ -81,7 +81,10 @@ typed AS (
     trim("CPF_CNPJ")                                              AS holder_id_raw,
     upper(trim("Substância"))                                     AS cfem_substance,
     NULLIF(upper(trim("UF")), '')                                 AS uf,
-    CASE WHEN regexp_full_match(trim("CodigoMunicipio"), '[0-9]{7}') THEN trim("CodigoMunicipio") END AS ibge_municipality_code,
+    -- valid IBGE code = 7 digits whose first two digits are an existing IBGE state code (e.g. 9317710 is rejected)
+    CASE WHEN regexp_full_match(trim("CodigoMunicipio"), '[0-9]{7}')
+          AND left(trim("CodigoMunicipio"), 2) IN (SELECT ibge_uf_code FROM seed_uf)
+         THEN trim("CodigoMunicipio") END                         AS ibge_municipality_code,
     NULLIF(trim("Município"), '')                                 AS municipality,
     br_num("QuantidadeComercializada")                            AS quantity_sold,
     NULLIF(lower(trim("UnidadeDeMedida")), '')                    AS quantity_unit,

@@ -1,0 +1,104 @@
+table,column,tableau_type,unit,description
+production_monthly,level,String,,Aggregation level: national / location / uf / uf_location (always filter to ONE level)
+production_monthly,uf,String,,State code; All at national and location level
+production_monthly,uf_name,String,,State name; All when not applicable
+production_monthly,region,String,,Macro-region; All when not applicable
+production_monthly,location,String,,Onshore / Offshore / All (Total for NGL at UF level)
+production_monthly,product,String,,Oil / Natural gas / NGL (LGN) - never add products together
+production_monthly,unit,String,,Unit of volume: m3 (oil and NGL) or 1000 m3 (gas)
+production_monthly,unit_daily,String,,Unit of daily averages: m3/d or 1000 m3/d
+production_monthly,period_date,Date,,First day of the production month
+production_monthly,year,Number (whole),,Calendar year
+production_monthly,month,Number (whole),,Calendar month 1-12
+production_monthly,days_in_month,Number (whole),days,Calendar days of the month (leap years included)
+production_monthly,is_provisional,Boolean,,True for 2026 months (subject to ANP revision)
+production_monthly,n_not_reported,Number (whole),count,Components of the aggregate that ANP did not publish (0 = complete)
+production_monthly,volume,Number (decimal),see unit,Monthly production volume; NULL = not reported (never 0)
+production_monthly,daily_avg,Number (decimal),see unit_daily,volume / days_in_month
+production_monthly,oil_daily_avg_bbl,Number (decimal),bbl/d,Oil only: daily_avg x 6.28981 (labelled conversion)
+production_monthly,mom,Number (decimal),ratio,Month-on-month change of volume; NULL if previous month is 0 or missing
+production_monthly,daily_avg_mom,Number (decimal),ratio,Month-on-month change of daily average (removes 28-31 day effect)
+production_monthly,yoy,Number (decimal),ratio,Change vs same month previous year; NULL in first 12 months or zero base
+production_monthly,rolling_3m_daily_avg,Number (decimal),see unit_daily,Volume-weighted 3-month daily average; NULL until 3 months exist
+production_monthly,rolling_12m_daily_avg,Number (decimal),see unit_daily,Volume-weighted 12-month daily average; NULL until 12 months exist
+production_monthly,ytd_volume,Number (decimal),see unit,Cumulative volume from January; NULL once a month in the year is missing
+production_monthly,share_of_national,Number (decimal),ratio,Share of the national volume of the same product and month; NULL at national level
+production_monthly,historical_peak_daily_avg,Number (decimal),see unit_daily,Highest daily average up to this month
+production_monthly,pct_of_historical_peak,Number (decimal),ratio,daily_avg / historical peak (1 = at peak)
+production_monthly,is_new_peak,Boolean,,True when the month beats every previous month (first month never flagged)
+production_monthly,volatility_12m,Number (decimal),ratio,Rolling 12-month std of daily_avg_mom
+production_monthly,baseline_12m_prior_daily_avg,Number (decimal),see unit_daily,Mean daily average of the previous 12 months (current excluded)
+production_monthly,deviation_from_baseline_pct,Number (decimal),ratio,daily_avg / baseline - 1
+production_monthly,zscore_vs_prior_12m,Number (decimal),z,(daily_avg - baseline) / std of previous 12 months; NULL when std = 0
+production_monthly,is_statistical_anomaly,Boolean,,Robust z of daily_avg_mom > 3.5 (national and location levels; oil and gas) - statistical not an incident
+gas_utilization_monthly,level,String,,national / location / uf / uf_location
+gas_utilization_monthly,uf,String,,State code or All
+gas_utilization_monthly,uf_name,String,,State name or All
+gas_utilization_monthly,region,String,,Macro-region or All
+gas_utilization_monthly,location,String,,Onshore / Offshore / All
+gas_utilization_monthly,period_date,Date,,First day of the month (2000-01 onward)
+gas_utilization_monthly,year,Number (whole),,Calendar year
+gas_utilization_monthly,month,Number (whole),,Calendar month
+gas_utilization_monthly,days_in_month,Number (whole),days,Calendar days
+gas_utilization_monthly,is_provisional,Boolean,,True for 2026
+gas_utilization_monthly,gas_production_1000m3,Number (decimal),1000 m3,Gross natural gas production
+gas_utilization_monthly,reinjection_1000m3,Number (decimal),1000 m3,Gas reinjected into reservoirs
+gas_utilization_monthly,flaring_loss_1000m3,Number (decimal),1000 m3,Gas flared or lost
+gas_utilization_monthly,own_use_1000m3,Number (decimal),1000 m3,Gas consumed in E&P operations
+gas_utilization_monthly,available_1000m3,Number (decimal),1000 m3,Gas available (ANP 'disponível'); can be negative at UF level (allocation)
+gas_utilization_monthly,reinjection_rate,Number (decimal),ratio,reinjection / production; NULL if production <= 0
+gas_utilization_monthly,flaring_loss_rate,Number (decimal),ratio,flaring & losses / production
+gas_utilization_monthly,own_use_rate,Number (decimal),ratio,own use / production
+gas_utilization_monthly,available_rate,Number (decimal),ratio,available / production
+gas_utilization_monthly,balance_gap_1000m3,Number (decimal),1000 m3,production - (reinjection + flaring + own use + available); NULL if a flow is missing
+gas_utilization_monthly,balance_gap_pct,Number (decimal),ratio,balance gap / production
+gas_utilization_monthly,flaring_daily_avg_1000m3,Number (decimal),1000 m3/d,Flaring & losses per calendar day
+gas_utilization_monthly,allocation_sensitive,Boolean,,True at UF levels: ANP allocates volumes between states
+annual_summary,year,Number (whole),,Complete calendar year
+annual_summary,product,String,,Oil / Natural gas / NGL (LGN)
+annual_summary,unit_daily,String,,Unit of annual_daily_avg
+annual_summary,annual_volume,Number (decimal),m3 or 1000 m3,Annual national volume
+annual_summary,annual_daily_avg,Number (decimal),see unit_daily,annual_volume / days in year
+annual_summary,oil_daily_avg_bbl,Number (decimal),bbl/d,Oil only: annual_daily_avg x 6.28981
+annual_summary,yoy,Number (decimal),ratio,Change of annual volume vs previous year
+annual_summary,offshore_share,Number (decimal),ratio,Offshore share of the annual volume (NULL for NGL)
+regional_hhi,year,Number (whole),,Complete calendar year
+regional_hhi,product,String,,Oil / Natural gas
+regional_hhi,hhi,Number (decimal),index 0-10000,HHI of state shares of annual volume
+regional_hhi,top_uf,String,,Largest producing state
+regional_hhi,top_share,Number (decimal),ratio,Share of the largest state
+structural_breaks,product,String,,Oil / Natural gas
+structural_breaks,start,String,,First month of the regime (YYYY-MM)
+structural_breaks,end,String,,Last month of the regime (YYYY-MM)
+structural_breaks,n_months,Number (whole),months,Length of the regime
+structural_breaks,annualised_growth,Number (decimal),ratio per year,Growth rate within the regime (piecewise-linear fit of ln daily average)
+structural_breaks,mean_daily_avg,Number (decimal),m3/d or 1000 m3/d,Average daily production within the regime
+structural_breaks,metric,String,,Series that was segmented
+anomalies,product,String,,Oil / Natural gas
+anomalies,level,String,,national / location
+anomalies,location,String,,All / Onshore / Offshore
+anomalies,period,String,,Month flagged (YYYY-MM)
+anomalies,daily_avg,Number (decimal),m3/d or 1000 m3/d,Daily average in the month
+anomalies,daily_avg_mom,Number (decimal),ratio,Month-on-month change of the daily average
+anomalies,robust_z_mom,Number (decimal),z,Robust z-score (median/MAD); flagged when |z| > 3.5
+anomalies,zscore_vs_prior_12m,Number (decimal),z,Local z-score vs previous 12 months
+anomalies,direction,String,,rise / drop
+anomalies,classification,String,,Always 'statistical anomaly (not verified as an operational incident)'
+seasonality,product,String,,Oil / Natural gas
+seasonality,month,Number (whole),,Calendar month 1-12
+seasonality,seasonal_index,Number (decimal),ratio,Mean ratio of daily average to its centred 12-month average (1 = no effect)
+seasonality,std,Number (decimal),ratio,Standard deviation of the ratio across years
+seasonality,n,Number (whole),count,Years in the average
+seasonality,eta2,Number (decimal),ratio,Share of detrended variance explained by calendar month
+seasonality,perm_p_value,Number (decimal),p,Permutation test p-value (5000 shuffles)
+seasonality,window,String,,Period used
+dim_uf,uf,String,,State code; geographic role State/Province
+dim_uf,uf_name,String,,State name
+dim_uf,region,String,,Macro-region
+dim_uf,iso_3166_2,String,,ISO 3166-2 code (BR-XX)
+dim_uf,anp_name,String,,State name as published by ANP
+metadata,source_key,String,,Short source identifier
+metadata,source_name,String,,Source name
+metadata,url,String,,Official URL or local file
+metadata,coverage,String,,Period covered
+metadata,note,String,,Definition and caveats

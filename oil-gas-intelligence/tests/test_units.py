@@ -67,6 +67,13 @@ def test_dense_grid_assertion():
         add_time_features(p)
 
 
+def test_new_peak_needs_prior_history():
+    """Peaks are on the DAILY average: volumes are built as daily x days so the daily path is 10, 9, 12, 12, 13."""
+    days = pd.period_range("2020-01-01", periods=5, freq="M").days_in_month
+    f = add_time_features(_panel(np.array([10.0, 9.0, 12.0, 12.0, 13.0]) * days))
+    assert f.is_new_peak.tolist() == [False, False, True, False, True]
+
+
 def test_robust_z_flags_planted_outlier():
     x = pd.Series(np.r_[np.random.default_rng(1).normal(0, 1, 200), 15.0])
     z = robust_z(x)
