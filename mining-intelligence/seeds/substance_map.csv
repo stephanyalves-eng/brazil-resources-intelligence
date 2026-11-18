@@ -1,0 +1,149 @@
+cfem_substance,substance_group,amb_substance,mapping_basis
+FERRO,Iron ore,Ferro,synonym
+MINÉRIO DE FERRO,Iron ore,Ferro,synonym
+HEMATITA,Iron ore,Ferro,synonym
+MAGNETITA,Iron ore,Ferro,synonym
+COBRE,Copper,Cobre,synonym
+MINÉRIO DE COBRE,Copper,Cobre,synonym
+OURO,Gold,Ouro,synonym
+MINÉRIO DE OURO,Gold,Ouro,synonym
+OURO NATIVO,Gold,Ouro,synonym
+BAUXITA,Bauxite (aluminium),Alumínio (Bauxita),synonym
+MINÉRIO DE ALUMÍNIO,Bauxite (aluminium),Alumínio (Bauxita),synonym
+ALUMÍNIO,Bauxite (aluminium),Alumínio (Bauxita),synonym
+CALCÁRIO,Limestone,Calcário,exact
+CALCÁRIO CALCÍTICO,Limestone,Calcário,synonym
+CALCÁRIO INDUSTRIAL,Limestone,Calcário,synonym
+CALCITA,Limestone,Calcário,judgment
+PEDRA CALCÁRIA,Limestone,Calcário,synonym
+CONCHAS CALCÁRIAS,Limestone,Calcário,judgment
+CALCÁRIO DOLOMÍTICO,Dolomite & magnesite,Dolomito e Magnesita,judgment
+DOLOMITO,Dolomite & magnesite,Dolomito e Magnesita,synonym
+MAGNESITA,Dolomite & magnesite,Dolomito e Magnesita,synonym
+ÁGUA MINERAL,Mineral water,,no_amb_equivalent
+ÁGUA POTÁVEL DE MESA,Mineral water,,no_amb_equivalent
+ÁGUA MINERAL RAD. FON,Mineral water,,no_amb_equivalent
+ÁGUA MINERAL CARBOGAS,Mineral water,,no_amb_equivalent
+ÁGUAS TERMAIS,Mineral water,,no_amb_equivalent
+FOSFATO,Phosphate,Fosfato,exact
+APATITA,Phosphate,Fosfato,synonym
+FERTILIZANTE FOSFATADO,Phosphate,Fosfato,judgment
+ROCHA FOSFÁTICA,Phosphate,Fosfato,synonym
+NÍQUEL,Nickel,Níquel,exact
+MINÉRIO DE NÍQUEL,Nickel,Níquel,synonym
+AREIA,Sand (construction),Areia,exact
+AREIA LAVADA,Sand (construction),Areia,synonym
+AREIA DE FUNDIÇÃO,Industrial sand,Areias Industriais,synonym
+AREIA QUARTZOSA,Industrial sand,Areias Industriais,judgment
+AREIA P/ VIDRO,Industrial sand,Areias Industriais,synonym
+AREIA INDUSTRIAL,Industrial sand,Areias Industriais,synonym
+MANGANÊS,Manganese,Manganês,exact
+MINÉRIO DE MANGANÊS,Manganese,Manganês,synonym
+CAULIM,Kaolin,Caulim,exact
+CAULIM ARGILOSO,Kaolin,Caulim,synonym
+CASSITERITA,Tin,Estanho,synonym
+MINÉRIO DE ESTANHO,Tin,Estanho,synonym
+ESTANHO,Tin,Estanho,exact
+CARVÃO,Coal,Carvão Mineral,synonym
+CARVÃO MINERAL,Coal,Carvão Mineral,exact
+SILVINITA,Potash,Potássio,synonym
+SILVITA,Potash,Potássio,synonym
+ROCHA POTÁSSICA,Potash,Potássio,judgment
+ARGILA,Clays,Argilas,synonym
+ARGILA REFRATÁRIA,Clays,Argilas,synonym
+ARGILA BRANCA,Clays,Argilas,synonym
+ARGILA P/CER. VERMELH,Clays,Argilas,synonym
+ARGILITO,Clays,Argilas,judgment
+BENTONITA,Clays,Argilas,judgment
+NIÓBIO,Niobium,Nióbio,exact
+PIROCLORO,Niobium,Nióbio,synonym
+MINÉRIO DE NIÓBIO,Niobium,Nióbio,synonym
+AMIANTO,Asbestos,Amianto,exact
+CRISOTILA,Asbestos,Amianto,synonym
+ZINCO,Zinc,Zinco,exact
+MINÉRIO DE ZINCO,Zinc,Zinco,synonym
+SILICATOS DE ZINCO,Zinc,Zinco,synonym
+CROMITA,Chromium,Cromo,synonym
+MINÉRIO DE CROMO,Chromium,Cromo,synonym
+CROMO,Chromium,Cromo,exact
+GRAFITA,Graphite,Grafita,exact
+MINÉRIO DE LÍTIO,Lithium,Lítio,synonym
+ESPODUMÊNIO,Lithium,Lítio,synonym
+TALCO,Talc & mineral fillers,Talco e outras Cargas Minerais,synonym
+ESTEATITO,Talc & mineral fillers,Talco e outras Cargas Minerais,judgment
+AGALMATOLITO,Talc & mineral fillers,Talco e outras Cargas Minerais,judgment
+PIROFILITA,Talc & mineral fillers,Talco e outras Cargas Minerais,judgment
+MINÉRIO DE CHUMBO,Lead,Chumbo,synonym
+CHUMBO,Lead,Chumbo,exact
+TANTALITA-COLUMBITA,Columbite-tantalite,Columbita-Tantalita,synonym
+MINÉRIO DE TÂNTALO,Columbite-tantalite,Columbita-Tantalita,synonym
+COLUMBITA,Columbite-tantalite,Columbita-Tantalita,synonym
+TANTALITA,Columbite-tantalite,Columbita-Tantalita,synonym
+MINÉRIO DE VANÁDIO,Vanadium,Vanádio,synonym
+GIPSITA,Gypsum,Gipsita,exact
+GIPSO,Gypsum,Gipsita,synonym
+QUARTZO,Quartz crystal,Quartzo (Cristal) e outros Piezelétricos,judgment
+SAIBRO,Saibro (weathered rock fill),Saibro,exact
+ILMENITA,Titanium,Titânio,synonym
+RUTILO,Titanium,Titânio,synonym
+MINÉRIO DE TITÂNIO,Titanium,Titânio,synonym
+FELDSPATO,Feldspar & nepheline syenite,"Feldspato, Leucita e Nefelina-Sienito",synonym
+ZIRCONITA,Zirconium,Zircônio,synonym
+ZIRCÔNIO,Zirconium,Zircônio,exact
+DIAMANTE,Diamond,Diamante,exact
+DIAMANTE INDUSTRIAL,Diamond,Diamante,synonym
+VERMICULITA,Vermiculite & perlite,Vermiculita e Perlita,synonym
+ESMERALDA,Gemstones,Gemas,synonym
+AMETISTA,Gemstones,Gemas,synonym
+TURMALINA,Gemstones,Gemas,synonym
+CALCEDÔNIA,Gemstones,"Geodos, Ágatas, Calcedônia, etc",synonym
+FLUORITA,Fluorite,Fluorita e Criolita,synonym
+BARITA,Barite,Bário,synonym
+URÂNIO,Uranium,Urânio e outros Radioativos,synonym
+MINÉRIO DE PRATA,Silver,Prata,synonym
+TERRAS RARAS,Rare earths & monazite,Monazita e Terras-Raras,synonym
+SCHEELITA,Tungsten,Tungstênio,synonym
+TUNGSTÊNIO,Tungsten,Tungstênio,exact
+MINÉRIO DE TUNGSTÊNIO,Tungsten,Tungstênio,synonym
+TURFA,Peat,Turfa,exact
+DIATOMITO,Diatomite,Diatomita,synonym
+SALGEMA,Rock salt,Sal,synonym
+GRANITO P/ BRITA,Crushed stone & gravel,Rochas (Britadas) e Cascalho,synonym
+DIABÁSIO P/ BRITA,Crushed stone & gravel,Rochas (Britadas) e Cascalho,synonym
+BASALTO P/ BRITA,Crushed stone & gravel,Rochas (Britadas) e Cascalho,synonym
+GNAISSE P/ BRITA,Crushed stone & gravel,Rochas (Britadas) e Cascalho,synonym
+BRITA DE GRANITO,Crushed stone & gravel,Rochas (Britadas) e Cascalho,synonym
+CALCÁRIO P/ BRITA,Crushed stone & gravel,Rochas (Britadas) e Cascalho,synonym
+CASCALHO,Crushed stone & gravel,Rochas (Britadas) e Cascalho,synonym
+SEIXOS,Crushed stone & gravel,Rochas (Britadas) e Cascalho,synonym
+GRANITO ORNAMENTAL,Dimension stone,Rochas Ornamentais,synonym
+BASALTO P/ REVESTIMENTO,Dimension stone,Rochas Ornamentais,synonym
+GRANITO,Stone - use unspecified,,ambiguous_use
+BASALTO,Stone - use unspecified,,ambiguous_use
+GNAISSE,Stone - use unspecified,,ambiguous_use
+QUARTZITO,Stone - use unspecified,,ambiguous_use
+GRANULITO,Stone - use unspecified,,ambiguous_use
+DIABÁSIO,Stone - use unspecified,,ambiguous_use
+MÁRMORE,Stone - use unspecified,,ambiguous_use
+SIENITO,Stone - use unspecified,,ambiguous_use
+MIGMATITO,Stone - use unspecified,,ambiguous_use
+FILITO,Stone - use unspecified,,ambiguous_use
+DIORITO,Stone - use unspecified,,ambiguous_use
+XISTO,Stone - use unspecified,,ambiguous_use
+ARENITO,Stone - use unspecified,,ambiguous_use
+ARDÓSIA,Stone - use unspecified,,ambiguous_use
+MICAXISTO,Stone - use unspecified,,ambiguous_use
+GRANODIORITO,Stone - use unspecified,,ambiguous_use
+SERPENTINITO,Stone - use unspecified,,ambiguous_use
+FONÓLITO,Stone - use unspecified,,ambiguous_use
+TONALITO,Stone - use unspecified,,ambiguous_use
+PEGMATITO,Stone - use unspecified,,ambiguous_use
+SILTITO,Stone - use unspecified,,ambiguous_use
+GABRO,Stone - use unspecified,,ambiguous_use
+FOLHELHO,Stone - use unspecified,,ambiguous_use
+RIÓLITO,Stone - use unspecified,,ambiguous_use
+QUARTZITO DUMORTIERITO,Stone - use unspecified,,ambiguous_use
+TRAQUITO,Stone - use unspecified,,ambiguous_use
+DACITO,Stone - use unspecified,,ambiguous_use
+XISTO ARGILOSO,Stone - use unspecified,,ambiguous_use
+CHARNOQUITO,Stone - use unspecified,,ambiguous_use
