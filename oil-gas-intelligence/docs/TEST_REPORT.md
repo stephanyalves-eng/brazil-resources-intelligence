@@ -1,6 +1,10 @@
 # Test Report — Oil & Gas Intelligence
 
-**Latest run (Phase 8):** 2026-11-18 16:14 (UTC−3): **90 / 90 passed** (units 11, data quality 58, Tableau exports 21).
+**Final run (Phase 10, after a clean rebuild from raw):** 2026-11-18 16:29 (UTC−3): **90 / 90 passed**, 0 skipped.
+**Determinism:** after deleting all generated outputs and rerunning `python -m oilgas.pipeline`, all 9 extracts and 5 charts were
+byte-identical to the committed versions (`git diff` empty).
+
+**Phase 8 run:** 2026-11-18 16:14 (UTC−3): 90 / 90 passed (units 11, data quality 58, Tableau exports 21).
 The Phase 7 run (68 tests) is described below. Phase 8 additions are listed at the end.
 
 **Phase 7 run:** 2026-11-18 16:05 (UTC−3) · Python 3.12.10 · pytest 9.2.0 · pandas 3.1.1 · numpy 2.5.5 · Windows 11

@@ -100,3 +100,24 @@ See [SOURCE_SELECTION_REPORT.md](SOURCE_SELECTION_REPORT.md).
 | Tests | Reference values in the checklists were re-read from the exported CSVs. The guides are **not executed in Tableau**: no workbook exists |
 | Not done | Building and publishing the workbooks in Tableau Public (manual, and your decision: published workbooks are public) |
 | Next | Phase 10 — README, LIMITATIONS, CHANGELOG, DATA_SOURCES, portfolio texts |
+
+## Phase 10 — Documentation and portfolio publishing kit (2026-11-18) ✅
+
+| Item | Content |
+|---|---|
+| Objective | Complete documentation set, portfolio materials, and a final reproducibility check |
+| Files created | Root `README.md`; per project `README.md`, `docs/DATA_SOURCES.md`, `docs/LIMITATIONS.md`, `docs/CHANGELOG.md`, `docs/PORTFOLIO_KIT.md` (case study plus GitHub, LinkedIn, Medium, DEV, Peerlist and portfolio texts); `shared/README.md`, `shared/documentation-templates/`; `oil-gas-intelligence/notebooks/01_walkthrough.ipynb` (thin, executed, 0 errors) |
+| Reproducibility check | Deleted all generated outputs and rebuilt from raw. **Oil & gas:** every extract and chart byte-identical. **Mining:** extracts differed, because parallel float sums and `arg_max` ties made the output non-deterministic. Fixed (rule T15: exact DECIMAL, ordered aggregates, unique ordering). **Three clean builds were then byte-identical.** Findings unchanged; some R$ totals moved by R$ 0.01 |
+| Tests (final) | Mining **117/117**, oil & gas **90/90** passed (16:29), 0 skipped, 0 warnings |
+| Claims checked | Portfolio texts use only measured figures, and say the dashboard is specified, not published. The CFEM municipal wording was corrected to "attributed by place of extraction" (it is not CFEM distribution) |
+| Pending (your actions) | (1) Build the two dashboards in Tableau Public from the build guides and check them against the checklists. (2) Publishing (public) and adding the links. (3) Pushing the repository to GitHub if you want it public: there is no remote yet. (4) Domain review of `judgment` substance mappings |
+
+## Summary of the project status
+
+| | Mining | Oil & gas |
+|---|---|---|
+| Sources | ANM AMB + CFEM (327 MB) | ANP monthly (7 series) + Anuário 2026 |
+| Pipeline | DuckDB SQL, ~10 s | Python package, ~10 s |
+| Tests | 117 passed | 90 passed |
+| Tableau extracts | 14 CSVs, 6.7 MB | 9 CSVs, 8.7 MB |
+| Dashboard | Specified (4 pages) | Specified (5 pages) |

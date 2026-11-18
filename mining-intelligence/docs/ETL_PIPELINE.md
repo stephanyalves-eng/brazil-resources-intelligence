@@ -84,7 +84,10 @@ The output database is `data/interim/mining.duckdb` (not versioned). Check resul
 | T9 | Quantities are aggregated only when the group has a single unit. Otherwise NULL | marts | — |
 | T10 | YoY only when the previous row is the calendar previous year and its value > 0 | marts | No YoY across gap years |
 | T11 | Joins only between tables pre-aggregated to the same grain (AMB × CFEM FULL JOIN with `match_status`) | `mart_amb_cfem_*` | 3,414 both / 515 AMB-only / 1,667 CFEM-only |
-| T12 | Analysis views exclude `incomplete` and `partial_history` months. 2026 is labelled "YTD Jan–Jun (provisional)" | `v_cfem_usable` | R$ 74.31 bn usable of R$ 74.54 bn |
+| T12 | Analysis views exclude `incomplete` and `partial_history` months. 2026 is labelled "YTD Jan–Jun (provisional)" | `v_cfem_usable` | R$ 74.01 bn usable (net of T13) of R$ 74.54 bn gross |
+| T13 | Identical CFEM repeats are excluded in months where they exceed 5 % of value (systematic duplicate export) | `stg_cfem.is_excluded_duplicate` | Feb 2024 (R$ 296.3 M) and Aug 2002 (partial history) |
+| T14 | An IBGE municipality code is valid only with 7 digits **and** a real IBGE state prefix. The municipality UF is derived from the code | staging, `mart_cfem_municipality_year` | 1,624 lines without a valid code |
+| T15 | **Determinism:** numbers are parsed as exact `DECIMAL(38,10)`; "top" picks use ordered aggregates with tie-breakers; exports use a unique `ORDER BY` | all layers | 3 clean builds → byte-identical extracts |
 
 ## SQL techniques used (non-artificial)
 

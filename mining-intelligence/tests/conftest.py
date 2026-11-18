@@ -31,5 +31,15 @@ def manifest() -> list[dict]:
         return list(csv.DictReader(fh))
 
 
+def _num(v):
+    """Monetary and quantity columns are exact DECIMAL in DuckDB; compare them as float in tests."""
+    from decimal import Decimal
+    return float(v) if isinstance(v, Decimal) else v
+
+
 def scalar(con, sql: str):
-    return con.execute(sql).fetchone()[0]
+    return _num(con.execute(sql).fetchone()[0])
+
+
+def row(con, sql: str) -> tuple:
+    return tuple(_num(v) for v in con.execute(sql).fetchone())

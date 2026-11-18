@@ -38,7 +38,7 @@ COPY (
   SELECT base_year AS year, uf, uf_name, region, round(sale_value_brl, 2) AS sale_value_brl, n_substance_groups,
          round(share_of_national, 6) AS share_of_national, rank_in_year, round(cumulative_share, 6) AS cumulative_share,
          round(value_yoy, 6) AS value_yoy, rank_change
-  FROM mart_amb_uf_year ORDER BY year, rank_in_year
+  FROM mart_amb_uf_year ORDER BY year, rank_in_year, uf
 ) TO 'tableau/data/amb_uf_year.csv' (HEADER, DELIMITER ',');
 
 -- name: export_amb_substance_year
@@ -47,7 +47,7 @@ COPY (
          round(production_qty, 3) AS production_qty, unit, n_producing_ufs,
          round(share_of_national, 6) AS share_of_national, rank_in_year, round(cumulative_share, 6) AS cumulative_share,
          round(value_yoy, 6) AS value_yoy, round(qty_yoy, 6) AS qty_yoy
-  FROM mart_amb_substance_year ORDER BY year, rank_in_year
+  FROM mart_amb_substance_year ORDER BY year, rank_in_year, substance_group
 ) TO 'tableau/data/amb_substance_year.csv' (HEADER, DELIMITER ',');
 
 -- name: export_amb_national_year
@@ -90,7 +90,7 @@ COPY (
 COPY (
   SELECT year, year_status, ibge_municipality_code, municipality_name, uf, main_substance_group,
          round(cfem_brl, 2) AS cfem_brl, rank_in_year
-  FROM mart_cfem_municipality_year ORDER BY year, rank_in_year
+  FROM mart_cfem_municipality_year ORDER BY year, rank_in_year, ibge_municipality_code
 ) TO 'tableau/data/cfem_municipality_year.csv' (HEADER, DELIMITER ',');
 
 -- name: export_cfem_monthly

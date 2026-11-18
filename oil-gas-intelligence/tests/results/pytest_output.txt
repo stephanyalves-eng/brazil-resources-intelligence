@@ -96,4 +96,4 @@ tests/test_units.py::test_robust_z_flags_planted_outlier PASSED          [ 98%]
 tests/test_units.py::test_segmentation_recovers_known_break PASSED       [100%]
 
 - generated xml file: C:\Tableau\industrial-data-analytics\oil-gas-intelligence\tests\results\junit.xml -
-============================= 90 passed in 0.94s ==============================
+============================= 90 passed in 1.04s ==============================

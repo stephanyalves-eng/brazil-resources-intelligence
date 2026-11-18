@@ -56,5 +56,5 @@ def test_staging_types(con):
     types = dict(con.execute("SELECT column_name, data_type FROM information_schema.columns "
                          "WHERE table_name = 'stg_cfem'").fetchall())
     assert types["year"] == "INTEGER" and types["month"] == "INTEGER"
-    assert types["cfem_brl"] == "DOUBLE" and types["period_month"] == "DATE"
+    assert types["cfem_brl"].startswith("DECIMAL") and types["period_month"] == "DATE"   # exact decimals (determinism)
     assert types["slip_created_at"].startswith("TIMESTAMP")

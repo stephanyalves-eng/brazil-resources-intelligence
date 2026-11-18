@@ -198,7 +198,9 @@ CREATE OR REPLACE TABLE mart_cfem_municipality_year AS
 WITH names AS (
   -- UF is derived from the IBGE code prefix (authoritative), so lines with a blank UF/name still place correctly
   SELECT m.ibge_municipality_code,
-         coalesce(arg_max(m.municipality, m.n) FILTER (m.municipality IS NOT NULL), 'IBGE ' || m.ibge_municipality_code) AS municipality_name,
+         -- ordered aggregates with explicit tie-breakers (arg_max resolves ties arbitrarily -> non-deterministic output)
+         coalesce(first(m.municipality ORDER BY m.n DESC, m.municipality) FILTER (m.municipality IS NOT NULL),
+                  'IBGE ' || m.ibge_municipality_code) AS municipality_name,
          any_value(u.uf) AS uf
   FROM (SELECT ibge_municipality_code, municipality, count(*) AS n FROM stg_cfem
         WHERE ibge_municipality_code IS NOT NULL GROUP BY ALL) m
@@ -207,7 +209,7 @@ WITH names AS (
 )
 SELECT f.year, cfem_year_status(f.year) AS year_status, f.ibge_municipality_code, n.municipality_name, n.uf,
        sum(f.cfem_brl) AS cfem_brl,
-       arg_max(f.substance_group, f.cfem_brl) AS main_substance_group,   -- the group with the largest line value
+       first(f.substance_group ORDER BY f.cfem_brl DESC, f.substance_group) AS main_substance_group,   -- group of the largest fact row
        rank() OVER (PARTITION BY f.year ORDER BY sum(f.cfem_brl) DESC) AS rank_in_year
 FROM v_cfem_usable f JOIN names n USING (ibge_municipality_code)
 GROUP BY f.year, f.ibge_municipality_code, n.municipality_name, n.uf;
@@ -277,7 +279,7 @@ SELECT year, concentration_type, scope,
        round(sum(pct * pct), 1)                  AS hhi,
        round(max(pct), 2)                        AS cr1_pct,
        round(sum(pct) FILTER (rk <= 4), 2)       AS cr4_pct,
-       arg_max(participant, v)                   AS top_participant,
+       first(participant ORDER BY v DESC, participant) AS top_participant,
        sum(v)                                    AS total_value_brl,
        CASE WHEN sum(pct * pct) < 1500 THEN 'unconcentrated'
             WHEN sum(pct * pct) <= 2500 THEN 'moderately concentrated'

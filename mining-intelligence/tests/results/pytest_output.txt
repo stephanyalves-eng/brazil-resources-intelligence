@@ -123,4 +123,4 @@ tests/test_tableau_exports.py::test_no_future_or_incomplete_periods_exported PAS
 tests/test_tableau_exports.py::test_price_volume_effects_add_up PASSED   [100%]
 
 - generated xml file: C:\Tableau\industrial-data-analytics\mining-intelligence\tests\results\junit.xml -
-============================= 117 passed in 2.09s =============================
+============================= 117 passed in 2.07s =============================

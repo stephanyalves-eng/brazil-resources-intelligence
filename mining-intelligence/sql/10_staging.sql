@@ -13,8 +13,10 @@ SELECT * FROM read_csv('seeds/amb_substance.csv', header = true, all_varchar = t
 CREATE OR REPLACE TABLE seed_substance_map AS
 SELECT * FROM read_csv('seeds/substance_map.csv', header = true, all_varchar = true);
 
--- Decimal-comma text -> number. ',000000' and '1922,30299' both parse. NULL stays NULL.
-CREATE OR REPLACE MACRO br_num(x) AS TRY_CAST(replace(trim(x), ',', '.') AS DOUBLE);
+-- Decimal-comma text -> exact number. ',000000' and '1922,30299' both parse. NULL stays NULL.
+-- DECIMAL (not DOUBLE) on purpose: DuckDB aggregates in parallel, and floating-point sums then vary in the last digit
+-- between runs, which also breaks ties in rankings. Exact decimals make every build byte-identical (Phase 10 finding).
+CREATE OR REPLACE MACRO br_num(x) AS TRY_CAST(replace(trim(x), ',', '.') AS DECIMAL(38, 10));
 
 -- ---------- stg_amb_beneficiada ----------
 -- Grain: one published AMB record (base year x UF x substance x contained-indicator, not unique; see DATA_PROFILE §2)

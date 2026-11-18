@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from conftest import scalar
+from conftest import row, scalar
 
 GRAINS = {
     "fct_amb_beneficiada": "base_year, uf, amb_substance",
@@ -51,7 +51,7 @@ def test_amb_collapse_only_removes_exact_repeats(con):
 
 
 def test_cfem_net_equals_gross_minus_excluded(con):
-    g, n, x = con.execute("SELECT sum(cfem_brl_gross), sum(cfem_brl), sum(cfem_brl_excluded_duplicates) FROM fct_cfem_monthly").fetchone()
+    g, n, x = row(con, "SELECT sum(cfem_brl_gross), sum(cfem_brl), sum(cfem_brl_excluded_duplicates) FROM fct_cfem_monthly")
     assert g == pytest.approx(scalar(con, "SELECT sum(cfem_brl) FROM stg_cfem"), rel=1e-12)
     assert g - x == pytest.approx(n, rel=1e-12)
     assert x == pytest.approx(296_280_241.37, abs=0.01)
@@ -70,7 +70,7 @@ def test_usable_view_excludes_incomplete_and_partial_months(con):
 
 def test_integration_join_has_no_fan_out(con):
     """Both sides of the AMB x CFEM FULL JOIN keep their pre-join totals."""
-    amb, cfem = con.execute("SELECT sum(amb_sale_value_brl), sum(cfem_brl) FROM mart_amb_cfem_uf_substance_year").fetchone()
+    amb, cfem = row(con, "SELECT sum(amb_sale_value_brl), sum(cfem_brl) FROM mart_amb_cfem_uf_substance_year")
     assert amb == pytest.approx(scalar(con, "SELECT sum(sale_value_brl) FROM fct_amb_beneficiada"), rel=1e-12)
     exp = scalar(con, """SELECT sum(cfem_brl) FROM v_cfem_usable WHERE year BETWEEN 2010 AND 2025 AND uf IS NOT NULL
                          AND substance_group IN (SELECT substance_group FROM dim_substance_group WHERE has_amb_equivalent)""")
@@ -117,9 +117,9 @@ def test_yoy_never_crosses_a_gap_year(con):
 
 
 def test_yoy_matches_manual_calculation(con):
-    v24, v25, yoy = con.execute("""SELECT max(sale_value_brl) FILTER (base_year = 2024), max(sale_value_brl) FILTER (base_year = 2025),
+    v24, v25, yoy = row(con, """SELECT max(sale_value_brl) FILTER (base_year = 2024), max(sale_value_brl) FILTER (base_year = 2025),
                                       max(value_yoy) FILTER (base_year = 2025)
-                               FROM mart_amb_uf_year WHERE uf = 'MG'""").fetchone()
+                               FROM mart_amb_uf_year WHERE uf = 'MG'""")
     assert yoy == pytest.approx(v25 / v24 - 1, rel=1e-12)
 
 

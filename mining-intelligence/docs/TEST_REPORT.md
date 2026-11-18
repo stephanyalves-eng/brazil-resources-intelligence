@@ -1,6 +1,12 @@
 # Test Report — Mining Intelligence
 
-**Latest run (Phase 8):** 2026-11-18 16:14 (UTC−3): **117 / 117 passed** (raw & schema 9, staging 16, marts 33, Tableau exports 59).
+**Final run (Phase 10, after a clean rebuild from raw):** 2026-11-18 16:29 (UTC−3): **117 / 117 passed**, 0 skipped, 0 warnings.
+**Determinism (Phase 10):** a clean rebuild first produced extracts that differed from the committed ones. The causes were parallel
+floating-point sums (last-digit noise, which also broke ties in rankings) and `arg_max` ties. The fix: exact `DECIMAL(38,10)`
+parsing, ordered aggregates with tie-breakers, and unique `ORDER BY` in the exports. **Three consecutive clean builds then produced
+byte-identical SHA-256 for all 14 files.** The analytical findings were unchanged; some R$ totals moved by R$ 0.01 (now exact sums).
+
+**Phase 8 run:** 2026-11-18 16:14 (UTC−3): 117 / 117 passed (raw & schema 9, staging 16, marts 33, Tableau exports 59).
 The Phase 7 run (56 tests) is described below. Phase 8 added the export suite and two staging tests (see "Phase 8 additions").
 
 **Phase 7 run:** 2026-11-18 16:05 (UTC−3) · Python 3.12.10 · pytest 9.2.0 · duckdb 2.0.0 · Windows 11
