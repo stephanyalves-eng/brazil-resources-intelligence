@@ -1,8 +1,8 @@
 # Portfolio Kit — Brazilian Mining Performance & Market Concentration
 
 Every number below comes from the 2026-11-18 build ([ANALYSIS_FINDINGS.md](ANALYSIS_FINDINGS.md)). There are no business-impact
-claims (savings, productivity), because this is an analysis of public data, not a client engagement. Replace `[GitHub link]` once the
-repository is public. Tableau Public: https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Mining_Performance/1ExecutiveOverview
+claims (savings, productivity), because this is an analysis of public data, not a client engagement. GitHub: https://github.com/stephanyalves-eng/brazil-resources-intelligence/tree/main/mining-intelligence ·
+Tableau Public: https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Mining_Performance/1ExecutiveOverview
 
 ---
 
@@ -91,7 +91,7 @@ I rebuilt the numbers from the regulator's open data (ANM), using SQL in DuckDB:
 
 The most useful finding was a data-quality one: February 2024's royalty file contains a duplicated export. Leaving it in would show 2024 growth of +12.8 % instead of +8.4 %.
 
-Everything is reproducible: raw-file hashes, 117 automated tests, documented rules. Repo: [GitHub link]
+Everything is reproducible: raw-file hashes, 117 automated tests, documented rules. Repo: https://github.com/stephanyalves-eng/brazil-resources-intelligence/tree/main/mining-intelligence
 
 #DataAnalytics #SQL #DuckDB #Mining #OpenData #DataQuality
 
@@ -115,9 +115,9 @@ Tags: `#sql #duckdb #python #dataengineering`
 ### Peerlist — project card
 **Brazilian Mining Performance & Market Concentration.** DuckDB SQL pipeline on ANM open data (AMB + 2.4 M CFEM lines). Price/volume
 decomposition, HHI/CR4 by geography, commodity and company, 117 tests, Tableau-ready model. Stack: SQL, DuckDB, Python, pytest,
-Tableau Public. [GitHub link]
+Tableau Public. https://github.com/stephanyalves-eng/brazil-resources-intelligence/tree/main/mining-intelligence
 
 ### Personal portfolio — card
 **Mining Intelligence · SQL**. *Which commodities, states and companies really drive Brazil's R$ 282 bn mining sector?* A
 layered DuckDB pipeline over official ANM data, with concentration metrics and a reproducible QA suite.
-`SQL` `DuckDB` `Data Quality` `Tableau` → [GitHub link] · [Tableau Public](https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Mining_Performance/1ExecutiveOverview)
+`SQL` `DuckDB` `Data Quality` `Tableau` → [GitHub](https://github.com/stephanyalves-eng/brazil-resources-intelligence/tree/main/mining-intelligence) · [Tableau Public](https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Mining_Performance/1ExecutiveOverview)

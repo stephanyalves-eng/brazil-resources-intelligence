@@ -1,7 +1,7 @@
 # Portfolio Kit — Brazilian Oil & Gas Production Analytics
 
 Numbers come from the 2026-11-18 build ([ANALYSIS_FINDINGS.md](ANALYSIS_FINDINGS.md)). There are no invented impact metrics.
-Replace `[GitHub link]` when the repository is public. Tableau Public: https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Oil_Gas_Production/1ProductionOverview
+GitHub: https://github.com/stephanyalves-eng/brazil-resources-intelligence/tree/main/oil-gas-intelligence · Tableau Public: https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Oil_Gas_Production/1ProductionOverview
 
 ---
 
@@ -87,7 +87,7 @@ Two lessons from building it in Python:
 1. The official file publishes future months as zeros. Without a cut-off rule, every chart shows a collapse.
 2. Missing is not zero. Unpublished cells stay empty and are counted, never filled in.
 
-Everything is validated against ANP's yearbook (within 0.04 %) and covered by 90 automated tests. Repo: [GitHub link]
+Everything is validated against ANP's yearbook (within 0.04 %) and covered by 90 automated tests. Repo: https://github.com/stephanyalves-eng/brazil-resources-intelligence/tree/main/oil-gas-intelligence
 
 #DataAnalytics #Python #OilAndGas #TimeSeries #DataQuality
 
@@ -109,9 +109,9 @@ Tags: `#python #pandas #datascience #testing`
 ### Peerlist — project card
 **Brazilian Oil & Gas Production Analytics.** Python pipeline over ANP monthly data (1997–2026): yearbook-validated cleaning, time-series
 features, structural breaks, seasonality, anomalies and gas-utilisation balance. 90 tests, Tableau-ready. Stack: Python, pandas, NumPy,
-matplotlib, pytest, Tableau Public. [GitHub link]
+matplotlib, pytest, Tableau Public. https://github.com/stephanyalves-eng/brazil-resources-intelligence/tree/main/oil-gas-intelligence
 
 ### Personal portfolio — card
 **Oil & Gas Intelligence · Python**. *Is Brazil's record production steady growth, a new phase, or a data artefact?* A modular,
 tested pipeline over 30 years of official ANP data.
-`Python` `pandas` `Statistics` `Tableau` → [GitHub link] · [Tableau Public](https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Oil_Gas_Production/1ProductionOverview)
+`Python` `pandas` `Statistics` `Tableau` → [GitHub](https://github.com/stephanyalves-eng/brazil-resources-intelligence/tree/main/oil-gas-intelligence) · [Tableau Public](https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Oil_Gas_Production/1ProductionOverview)
