@@ -1,7 +1,7 @@
 # Portfolio Kit — Brazilian Oil & Gas Production Analytics
 
 Numbers come from the 2026-11-18 build ([ANALYSIS_FINDINGS.md](ANALYSIS_FINDINGS.md)). There are no invented impact metrics.
-Replace `[GitHub link]` and `[Tableau Public link]` when available; the dashboard is specified, not yet published.
+Replace `[GitHub link]` and `[Tableau Public link]` when available; the dashboard is built locally, not yet published.
 
 ---
 
@@ -9,7 +9,7 @@ Replace `[GitHub link]` and `[Tableau Public link]` when available; the dashboar
 
 **Executive summary.** I built a modular Python pipeline over ANP's official monthly production statistics. It covers oil, gas,
 NGL and four gas-use flows, by state and onshore/offshore, from 1997 to Sep 2026. It cleans the data with explicit rules, engineers
-guarded time-series features, runs interpretable statistics and exports Tableau-ready tables. A five-page dashboard is specified.
+guarded time-series features, runs interpretable statistics and exports Tableau-ready tables. A five-page Tableau dashboard presents the results.
 
 **Business problem.** "Brazil produces record oil" is a headline, not an analysis. An operations or market analyst needs to know:
 - whether growth is steady or comes in phases;
@@ -42,7 +42,7 @@ module in `src/oilgas/` that runs on its own, orchestrated by `python -m oilgas.
 - 54.4 % of the gas produced is reinjected (19.1 % in 2010). Flaring and losses fell from 17.9 % to 2.8 %.
 - A small, significant March–May dip, and volatility rising onshore.
 
-**Dashboard walkthrough (specified; [build guide](TABLEAU_BUILD_GUIDE.md)).**
+**Dashboard walkthrough (built; screenshots in `assets/tableau_*.png`, [build guide](TABLEAU_BUILD_GUIDE.md)).**
 1. *Production Overview:* KPI tiles (latest daily average, daily MoM, YoY, % of peak) and the history with a 12-month line.
 2. *Regional:* map, ranking, onshore vs offshore, HHI.
 3. *Stability:* baseline band with anomaly markers, volatility, growth regimes, seasonality.

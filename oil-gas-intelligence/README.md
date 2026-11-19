@@ -5,7 +5,9 @@ how Brazilian oil and natural gas production evolved from 1997 to 2026, where it
 the gas that is produced.
 
 > **Status (2026-11-18):** modular pipeline, analysis, charts, tests (90/90 passing) and Tableau-ready extracts are complete.
-> The Tableau Public dashboard is **specified** ([build guide](docs/TABLEAU_BUILD_GUIDE.md)) but **not yet built or published**.
+> The Tableau workbook is **built and verified** against the build guide's checklist
+> ([`tableau/Brazilian_Oil_Gas_Production.twbx`](tableau/Brazilian_Oil_Gas_Production.twbx), screenshots in `assets/tableau_*.png`)
+> but **not yet published**.
 > Tableau Public link: *to be added after publishing*.
 
 ## Business questions

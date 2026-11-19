@@ -1,6 +1,8 @@
 # Tableau Build Guide — Brazilian Mining Performance & Market Concentration
 
-> **Status:** this is a specification and a manual build procedure. **No Tableau workbook (.twb/.twbx) has been created.**
+> **Status (2026-11-18):** built. `tableau/Brazilian_Mining_Performance.twbx` was generated from this guide by
+> `tableau/build_workbook.py`, opened in Tableau Public 2026.3, checked against §7 (all values match) and saved locally. It is
+> not published. The manual procedure below remains the reference.
 > There is no reliable free way to generate a Tableau Public workbook automatically, so the dashboard is built by hand in
 > Tableau Public (free) from the files in `tableau/data/`. Every number to verify after building is listed in §7.
 
@@ -79,8 +81,7 @@ Company Label            = IF [rank] <= 10 THEN STR([rank]) + ". " + [company_na
 Is Top Company           = [rank] = 1
 
 // [amb_cfem_uf_substance_year]
-CFEM per R$ of Sales     = SUM(IF [match_status] = "both" THEN [cfem_brl] END)
-                           / SUM(IF [match_status] = "both" THEN [amb_sale_value_brl] END)
+CFEM per R$ of Sales     = SUM([cfem_brl]) / SUM([amb_sale_value_brl])   // all mapped rows, as in sql/30_analysis.sql Q12 (§7 values)
 ```
 
 Number formats: R$ bn → `R$ #,##0.0 "bn"`; R$ mn → `R$ #,##0 "mn"`; shares → `0.0%`; HHI → `#,##0`; YoY → `+0.0%;-0.0%`.

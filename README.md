@@ -5,11 +5,12 @@ its own pipeline, tests and documentation, and both share one visual identity (S
 
 | Project | Core skill | Data | Questions | Status |
 |---|---|---|---|---|
-| [**Brazilian Mining Performance & Market Concentration**](mining-intelligence/README.md) | **SQL** (DuckDB): staging → marts, window functions, HHI | ANM AMB (2010–2025) + CFEM royalties (2.43 M rows, 2004–2026) | Price vs volume, commodity and state mix, geographic vs company concentration | Pipeline, analysis, 117 tests ✅ · dashboard specified |
-| [**Brazilian Oil & Gas Production Analytics**](oil-gas-intelligence/README.md) | **Python** (pandas, NumPy): modular CLI pipeline, statistics | ANP monthly production by state and location (1997–2026) + Anuário 2026 | Growth regimes, regional concentration, stability, gas utilisation | Pipeline, analysis, 90 tests ✅ · dashboard specified |
+| [**Brazilian Mining Performance & Market Concentration**](mining-intelligence/README.md) | **SQL** (DuckDB): staging → marts, window functions, HHI | ANM AMB (2010–2025) + CFEM royalties (2.43 M rows, 2004–2026) | Price vs volume, commodity and state mix, geographic vs company concentration | Pipeline, analysis, 117 tests ✅ · dashboard built (local `.twbx`) |
+| [**Brazilian Oil & Gas Production Analytics**](oil-gas-intelligence/README.md) | **Python** (pandas, NumPy): modular CLI pipeline, statistics | ANP monthly production by state and location (1997–2026) + Anuário 2026 | Growth regimes, regional concentration, stability, gas utilisation | Pipeline, analysis, 90 tests ✅ · dashboard built (local `.twbx`) |
 
-> The Tableau Public dashboards are **fully specified** (build guides with calculated fields, layouts and verification
-> checklists) but have **not been built or published yet**. Links will be added here once they are.
+> Both Tableau dashboards are **built and verified** against the build guides' checklists and saved locally as packaged
+> workbooks (`*/tableau/*.twbx`, screenshots in `*/assets/tableau_*.png`). They are **not published yet**; links will be added
+> here once they are.
 
 ## Principles applied
 - Real public data only, raw files preserved byte-for-byte with SHA-256 manifests.

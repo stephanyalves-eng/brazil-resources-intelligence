@@ -11,7 +11,7 @@ claims (savings, productivity), because this is an analysis of public data, not 
 **Executive summary.** I built a SQL pipeline in DuckDB over two official datasets from Brazil's mining regulator (ANM): 15 years of
 state-level mineral sales and 2.4 million royalty (CFEM) payment lines. The output answers four questions: how the sector's value
 evolved, whether price or volume drove it, which states and commodities dominate, and how concentrated the market is. It uses 14
-tested Tableau-ready tables and a four-page dashboard specification.
+tested Tableau-ready tables and a four-page Tableau dashboard.
 
 **Business problem.** Headlines about Brazilian mining usually quote one number, the total value. Investors, suppliers and local
 governments need to know *what* drives it (a commodity price or more tonnes), *where* it happens (which states and municipalities
@@ -44,7 +44,7 @@ company names come from the public CNPJ registry.
 - Company concentration (HHI): iron ore 5,104, with VALE S.A. paying 70.6 % of its CFEM; copper 5,438; gold 1,166, the only large commodity below the "moderately concentrated" band.
 - Mining in Canaã dos Carajás and Parauapebas accounts for 29.7 % of all CFEM collected, out of 2,851 municipalities with CFEM-paying extraction. Attribution is by place of extraction; the separate distribution of CFEM to municipalities is not analysed.
 
-**Dashboard walkthrough (specified; [build guide](TABLEAU_BUILD_GUIDE.md)).**
+**Dashboard walkthrough (built; screenshots in `assets/tableau_*.png`, [build guide](TABLEAU_BUILD_GUIDE.md)).**
 1. *Executive Overview:* four KPI tiles, the annual trend, a state map and the top commodities.
 2. *Regional & Commodity:* state ranking, a state × commodity heatmap, and the volume vs unit-value split.
 3. *Market Structure:* HHI over time with reference bands, the company Pareto, and municipal concentration.

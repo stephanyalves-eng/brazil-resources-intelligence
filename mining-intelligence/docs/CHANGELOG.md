@@ -13,3 +13,4 @@ All dates 2026-11-18 (single build session). Commits are in the repository histo
 | 0.7.0 | 8 | 14 Tableau extracts, data dictionary, data model, export tests (117 total). Fixed: IBGE codes validated by state prefix; UF derived from the code |
 | 0.8.0 | 9 | KPI definitions and Tableau build guide in the SA Design System |
 | 1.0.0 | 10 | README, data sources, limitations, portfolio kit. A clean rebuild exposed non-deterministic output (float sums, `arg_max` ties); fixed with exact decimals, ordered aggregates and unique ordering (rule T15). 3 builds byte-identical; 117/117 tests |
+| 1.1.0 | Tableau build | Tableau workbook built from the guide (`tableau/build_workbook.py` → `.twbx`), all §7 values verified in Tableau Public 2026.3. Fixed: M6 / K18 formula aligned with Q12 (no `match_status` filter) |

@@ -24,4 +24,4 @@
 
 ## Reproducibility
 15. Results are tied to the 2026-11-18 snapshot (`data/raw/MANIFEST.csv`). Tests pinned to snapshot counts fail by design after a republication.
-16. The dashboard is specified, not built. Verify a future build against the checklist in the build guide.
+16. The dashboard is built and checked locally but not published. The baseline band in S1 is drawn as two lines (low / high) instead of a shaded band.

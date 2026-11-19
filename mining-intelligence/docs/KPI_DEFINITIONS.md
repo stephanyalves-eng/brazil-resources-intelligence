@@ -21,7 +21,7 @@ All money is **nominal R$**. The "Reference value" column is the 2025 result fro
 | K15 | CFEM collected | Σ CFEM royalty collected | `cfem_uf_substance_year.cfem_brl` | `SUM([cfem_brl])` | R$ 7.91 bn (2025) | **Not revenue.** 2026 = YTD Jan–Jun, provisional. Feb 2024 duplicates removed |
 | K16 | CFEM by state / municipality | K15 by UF / IBGE municipality | `cfem_uf_substance_year`, `cfem_municipality_year` | `SUM([cfem_brl])` | Canaã dos Carajás 15.8 %, Parauapebas 13.9 % | — |
 | K17 | Municipal top-10 share | Σ top-10 municipalities / K15 | `cfem_municipality_year` | `[KPI Top10 Municipal Share]` | 61.6 % | Lines without a valid IBGE code are excluded |
-| K18 | CFEM per R$ of AMB sales | Σ CFEM / Σ AMB value, matched year × UF × group | `amb_cfem_uf_substance_year` (match_status = both) | `SUM([cfem_brl]) / SUM([amb_sale_value_brl])` | All mapped 2.70 %, iron ore 3.42 % | Indicator: different base and timing |
+| K18 | CFEM per R$ of AMB sales | Σ CFEM / Σ AMB value over all mapped year × UF × group rows (as in Q12) | `amb_cfem_uf_substance_year` | `SUM([cfem_brl]) / SUM([amb_sale_value_brl])` | All mapped 2.70 %, iron ore 3.42 % | Indicator: different base and timing |
 | K19 | Pareto (cumulative share) | Running Σ share by rank | `cumulative_share` columns | `RUNNING_SUM(SUM(v)) / TOTAL(SUM(v))` | — | — |
 
 **HHI bands** (reference only, US DOJ/FTC 2010): < 1,500 unconcentrated · 1,500–2,500 moderately · > 2,500 highly concentrated.

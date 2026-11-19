@@ -112,6 +112,18 @@ See [SOURCE_SELECTION_REPORT.md](SOURCE_SELECTION_REPORT.md).
 | Claims checked | Portfolio texts use only measured figures, and say the dashboard is specified, not published. The CFEM municipal wording was corrected to "attributed by place of extraction" (it is not CFEM distribution) |
 | Pending (your actions) | (1) Build the two dashboards in Tableau Public from the build guides and check them against the checklists. (2) Publishing (public) and adding the links. (3) Pushing the repository to GitHub if you want it public: there is no remote yet. (4) Domain review of `judgment` substance mappings |
 
+## Tableau build — both workbooks built and verified (2026-11-18) ✅
+
+| Item | Content |
+|---|---|
+| Method | Tableau Public 2026.3 driven by computer use, plus a generator. `shared/tableau_twb/twb.py` writes the `.twb`; its XML format was learned from files Tableau itself saved. Fixes: dashboard viewpoints, extracts, colour maps at source level, ATTR tooltips, actions, buttons, palettes in `<preferences>`. `*/tableau/build_workbook.py` builds each workbook from its guide. Each `.twb` was opened in Tableau, the extracts were regenerated, the values were checked against §7, and the packaged workbook was exported **locally** (File → Export Packaged Workbook). Nothing was published |
+| Outputs | `mining-intelligence/tableau/Brazilian_Mining_Performance.twbx` (4 dashboards, 19 sheets); `oil-gas-intelligence/tableau/Brazilian_Oil_Gas_Production.twbx` (5 dashboards, 27 sheets, one source copy per `level`); screenshots `*/assets/tableau_*.png` |
+| §7 mining | All match: E1 R$ 281.7 bn ▲ +15.2 %, E2 +10.7 %, E3 56.7 % / 82.1 %, E4 2,862, E6/R1 MG 37.8 % PA 36.9 % BA 4.5 %, E5 2021 R$ 322.2 bn, R4 +6.94 / +49.37, M1 5,104, M2 VALE 70.6 % cum4 87.6 %, M4 15.8 % / 13.9 %, M6 2.70 % / 3.42 % |
+| §7 oil & gas | All match: P1 748,985 m³/d, 4,710,975 bbl/d, gas 223,878 thousand m³/d (PROVISIONAL), P2 ▲ +2.1 % (volume −1.2 %), P3 +20.3 % / +17.5 %, P4 100 % new peak, P7 599,389 (+12.0 %) / 179,237 (+16.7 %), RJ 87.8 %, offshore 97.6 %, HHI 7,760 / 6,033, U1 54.4 / 33.4 / 9.8 / 2.8 %, S3 +8.7 % / +15.9 %, S5 7 rows. S4 April gas −3.6 %; oil is −2.4 % |
+| Doc corrections | Mining guide §3 / K18: the M6 formula filtered `match_status = "both"` (2.80 % / 3.67 %), but §7 came from Q12 over all mapped rows. The formula is aligned to Q12. Oil S4 / F7: April oil index 0.9765 = −2.35 %, rounded to −2.4 % (the docs had −2.3 %) |
+| Deviations | Dimension relationships to `dim_uf` / `dim_substance` not built (no view needs them). R1 shows the top 15 states. The R2 top 12 groups are fixed to 2025. S1 shows the baseline band as two lines. Phone layouts are Tableau's automatic ones |
+| Tests | Mining 117/117, oil & gas 90/90 after the doc edits |
+
 ## Summary of the project status
 
 | | Mining | Oil & gas |
@@ -120,4 +132,4 @@ See [SOURCE_SELECTION_REPORT.md](SOURCE_SELECTION_REPORT.md).
 | Pipeline | DuckDB SQL, ~10 s | Python package, ~10 s |
 | Tests | 117 passed | 90 passed |
 | Tableau extracts | 14 CSVs, 6.7 MB | 9 CSVs, 8.7 MB |
-| Dashboard | Specified (4 pages) | Specified (5 pages) |
+| Dashboard | Built and verified locally, `.twbx` (4 pages) | Built and verified locally, `.twbx` (5 pages) |

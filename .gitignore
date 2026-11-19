@@ -25,3 +25,7 @@ __pycache__/
 desktop.ini
 Thumbs.db
 .vscode/
+
+# Tableau lock files and generator smoke tests
+~*.twbr
+shared/tableau_twb/smoke_test*.twb

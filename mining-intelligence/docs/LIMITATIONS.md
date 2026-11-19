@@ -25,4 +25,4 @@
 
 ## Reproducibility
 16. ANM updates files daily in place. Results are tied to the snapshot in `data/raw/MANIFEST.csv`, and tests pinned to profiled counts fail by design on a new snapshot.
-17. The dashboard is specified, not built. Numbers in a future Tableau build must be checked against the build guide's checklist.
+17. The dashboard is built and checked locally but not published. Two views are simplified: the state ranking shows the top 15 states and the state × substance heatmap shows the 12 largest groups of 2025.

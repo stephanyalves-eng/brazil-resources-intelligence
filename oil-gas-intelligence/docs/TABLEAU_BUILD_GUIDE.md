@@ -1,6 +1,8 @@
 # Tableau Build Guide — Brazilian Oil & Gas Production Analytics
 
-> **Status:** this is a specification and a manual build procedure. **No Tableau workbook (.twb/.twbx) has been created.**
+> **Status (2026-11-18):** built. `tableau/Brazilian_Oil_Gas_Production.twbx` was generated from this guide by
+> `tableau/build_workbook.py`, opened in Tableau Public 2026.3, checked against §7 (all values match) and saved locally. It is
+> not published. The manual procedure below remains the reference.
 > There is no reliable free way to generate a Tableau Public workbook automatically. Build it by hand in Tableau Public from
 > `tableau/data/`, then check the numbers against §7.
 
@@ -166,7 +168,7 @@ axes**, each with its own unit label.
 | G5 2025 | oil HHI 7,760; gas 6,033 |
 | U1 2025 | reinjection 54.4 %, available 33.4 %, own use 9.8 %, flaring 2.8 % |
 | S3 | Oil Jul 2022 → Sep 2026 +8.7 %/yr; gas Oct 2023 → Sep 2026 +15.9 %/yr |
-| S4 April | oil −2.3 %, gas −3.6 % |
+| S4 April | oil −2.4 % (index 0.9765), gas −3.6 % |
 | S5 | 7 national rows (6 oil, 1 gas) when filtered to level = national |
 
 ## 8. Publish
