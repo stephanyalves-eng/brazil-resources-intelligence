@@ -123,6 +123,7 @@ See [SOURCE_SELECTION_REPORT.md](SOURCE_SELECTION_REPORT.md).
 | Doc corrections | Mining guide §3 / K18: the M6 formula filtered `match_status = "both"` (2.80 % / 3.67 %), but §7 came from Q12 over all mapped rows. The formula is aligned to Q12. Oil S4 / F7: April oil index 0.9765 = −2.35 %, rounded to −2.4 % (the docs had −2.3 %) |
 | Deviations | Dimension relationships to `dim_uf` / `dim_substance` not built (no view needs them). R1 shows the top 15 states. The R2 top 12 groups are fixed to 2025. S1 shows the baseline band as two lines. Phone layouts are Tableau's automatic ones |
 | Tests | Mining 117/117, oil & gas 90/90 after the doc edits |
+| Interactivity (follow-up) | Filters made global and clickable. Mining: YEAR, SUBSTANCE (All by default) and STATE drive every page. Oil & gas: a new STATE filter applies to the regional and gas pages; production KPIs stay national. Clicks set the filters through parameter actions. Header realigned in the dark band; grid layout; worksheet tabs hidden. Re-exported; §7 values unchanged at the defaults |
 
 ## Summary of the project status
 

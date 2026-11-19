@@ -29,6 +29,10 @@ P.add("p Product", "string", "Oil", members=["Oil", "Natural gas", "NGL (LGN)"])
 P.add("p Unit Oil", "string", "bbl/d", members=["m3/d", "bbl/d"])
 P.add("p Window", "string", "Since 2000", members=["Since 2000", "Last 10 years", "Last 36 months"])
 P.add("p Year", "integer", 2025, members=list(range(2000, 2026)), fmt="n0;-0")
+ALL_UF = "All states"
+UF_NAMES = {r["uf"]: r["uf_name"] for r in csv.DictReader(open(HERE / "data" / "dim_uf.csv", encoding="utf-8"))}
+P.add("p State", "string", ALL_UF, members=[ALL_UF] + sorted(UF_NAMES))
+UF_ALL = '{{p State}} = "' + ALL_UF + '"'
 
 
 def source(table, caption=None, levels=None):
@@ -60,6 +64,7 @@ pnl = source("production_monthly", "prod · national+location", ["national", "lo
 un = source("gas_utilization_monthly", "util · national", ["national"])
 ul = source("gas_utilization_monthly", "util · location", ["location"])
 uu = source("gas_utilization_monthly", "util · uf", ["uf"])
+uul = source("gas_utilization_monthly", "util · uf_location", ["uf_location"])
 ann = source("annual_summary")
 hhi = source("regional_hhi")
 brk = source("structural_breaks")
@@ -127,16 +132,25 @@ for ufs in TOP.values():
         FOCUS_COLORS.setdefault(STATE_NAMES[u], [F700, F600, SAGE, INK3][i])
 FOCUS_COLORS["Other states"] = CONTEXT
 
-for d in (un, ul, uu):
+for d, key in ((pu, "[uf]"), (pul, "[uf] + [location]")):
+    d.calc("State Filter", f"{UF_ALL} OR [uf] = {{{{p State}}}}", "boolean")
+    d.calc("Days", f"SUM([days_in_month]) / COUNTD({key})", "real", INT)
+pul.calc("Daily Avg (states)", "SUM([volume]) / {{Days}}", "real", INT)
+pu.calc("State Highlight", f'IF {UF_ALL} THEN "All" ELSEIF [uf] = {{{{p State}}}} THEN "Selected" ELSE "Other" END', "string")
+for d, key in ((un, None), (ul, "[location]"), (uu, "[uf]"), (uul, "[uf] + [location]")):
+    d.calc("Days", "SUM([days_in_month])" + (f" / COUNTD({key})" if key else ""), "real", INT)
+    if key and "[uf]" in key:
+        d.calc("State Filter", f"{UF_ALL} OR [uf] = {{{{p State}}}}", "boolean")
+for d in (un, ul, uu, uul):
     d.calc("Reinjection Rate", "SUM([reinjection_1000m3]) / SUM([gas_production_1000m3])", "real", PCT)
     d.calc("Flaring Rate", "SUM([flaring_loss_1000m3]) / SUM([gas_production_1000m3])", "real", PCT)
     d.calc("Own Use Rate", "SUM([own_use_1000m3]) / SUM([gas_production_1000m3])", "real", PCT)
     d.calc("Available Rate", "SUM([available_1000m3]) / SUM([gas_production_1000m3])", "real", PCT)
     d.calc("Balance Gap %", "(SUM([gas_production_1000m3]) - SUM([reinjection_1000m3]) - SUM([flaring_loss_1000m3]) "
            "- SUM([own_use_1000m3]) - SUM([available_1000m3])) / SUM([gas_production_1000m3])", "real", "p0.00%")
-    d.calc("Flaring per Day", "SUM([flaring_loss_1000m3]) / SUM([days_in_month])", "real", INT)
-    d.calc("Gas Production per Day", "SUM([gas_production_1000m3]) / SUM([days_in_month])", "real", INT)
-    d.calc("Reinjection per Day", "SUM([reinjection_1000m3]) / SUM([days_in_month])", "real", INT)
+    d.calc("Flaring per Day", "SUM([flaring_loss_1000m3]) / {{Days}}", "real", INT)
+    d.calc("Gas Production per Day", "SUM([gas_production_1000m3]) / {{Days}}", "real", INT)
+    d.calc("Reinjection per Day", "SUM([reinjection_1000m3]) / {{Days}}", "real", INT)
     d.calc("Is Selected Year", "[year] = {{p Year}}", "boolean")
     d.calc("Outside Band", "ABS({{Balance Gap %}}) > 0.005", "boolean")
 
@@ -203,20 +217,20 @@ wb.sheet(name="P7 Annual summary", ds=ann, mark="Bar", cols=[F("year", kind="ok"
                            " · offshore ", F("offshore_share", "sum")))
 
 wb.sheet(name="G1 State share map", ds=pu, mark="Multipolygon", geo=F("uf"), color=F("Share (recomputed)"), color_seq=SEQ,
-         filters=[(F("Is Product"), None), (F("Is Selected Year"), None)], title="State share of national production",
+         filters=[(F("Is Product"), None), (F("Is Selected Year"), None)], title="State share of national production · click a state",
          tooltip_text=ttip(F("uf_name", "attr"), ": ", F("Share (recomputed)"), " of national ", F("product", "attr"), " in ",
                            F("year", "attr")))
-wb.sheet(name="G2 State ranking", ds=pu, mark="Bar", rows=[F("uf_name")], cols=[F("volume", "sum")], color=F("Share (recomputed)"),
-         color_seq=SEQ, filters=[(F("Is Product"), None), (F("Is Selected Year"), None)],
-         sort=(F("uf_name"), F("volume", "sum"), "DESC"), text=[F("Share (recomputed)")], labels=True,
-         title="State ranking for p Year (click a state to filter G4)",
+wb.sheet(name="G2 State ranking", ds=pu, mark="Bar", rows=[F("uf_name")], cols=[F("volume", "sum")], color=F("State Highlight"),
+         color_map={"All": F600, "Selected": F700, "Other": CONTEXT}, filters=[(F("Is Product"), None), (F("Is Selected Year"), None)],
+         detail=[F("uf")], sort=(F("uf_name"), F("volume", "sum"), "DESC"), text=[F("Share (recomputed)")], labels=True,
+         title="State ranking for the selected year · click a state",
          tooltip_text=ttip(F("uf_name"), ": ", F("volume", "sum"), " · ", F("Share (recomputed)")))
-wb.sheet(name="G3 Onshore vs offshore", ds=pl, mark="Area", cols=[M], rows=[F("Daily Avg")], color=F("location"),
-         color_map={"Offshore": F700, "Onshore": SAGE}, filters=[(F("Is Product"), None), (F("In Window"), None)],
-         title="Onshore vs offshore · daily average",
-         tooltip_text=ttip(F("location"), " ", M, ": ", F("Daily Avg")))
+wb.sheet(name="G3 Onshore vs offshore", ds=pul, mark="Area", cols=[M], rows=[F("Daily Avg (states)")], color=F("location"),
+         color_map={"Offshore": F700, "Onshore": SAGE}, filters=[(F("Is Product"), None), (F("In Window"), None), (F("State Filter"), None)],
+         title="Onshore vs offshore · daily average (selected state)",
+         tooltip_text=ttip(F("location"), " ", M, ": ", F("Daily Avg (states)")))
 wb.sheet(name="G4 State trends", ds=pu, mark="Line", cols=[M], rows=[F("rolling_12m_daily_avg", "sum")], color=F("State Focus"),
-         color_map=FOCUS_COLORS, detail=[F("uf_name")], filters=[(F("Is Product"), None), (F("In Window"), None)],
+         color_map=FOCUS_COLORS, detail=[F("uf_name")], filters=[(F("Is Product"), None), (F("In Window"), None), (F("State Filter"), None)],
          title="State trends · 12-month rolling daily average",
          tooltip_text=ttip(F("uf_name"), " ", M, ": ", F("rolling_12m_daily_avg", "sum")))
 wb.sheet(name="G5 Geographic HHI", ds=hhi, mark="Line", cols=[F("year", kind="ok")], rows=[F("hhi", "sum")], mark_color=F700,
@@ -237,12 +251,12 @@ wb.sheet(name="S2 Volatility", ds=pnl, mark="Line", cols=[M], rows=[F("volatilit
          title="12-month volatility", tooltip_text=ttip(F("Volatility Series"), " ", M, ": 12M volatility ", F("volatility_12m", "avg")))
 wb.sheet(name="S3 Growth regimes", ds=brk, mark="GanttBar", rows=[F("product")], cols=[F("Start Date", "tmn")],
          size=F("Duration (days)", "sum"), color=F("Fast Regime"), color_map={"true": F700, "false": F600},
-         text=[F("Regime Label")], labels=True, title="Growth regimes (structural breaks)",
+         text=[F("Regime Label")], labels=True, title="Growth regimes (structural breaks) · click a product",
          tooltip=[F("start", "attr"), F("end", "attr"), F("annualised_growth", "sum"), F("n_months", "sum")],
          tooltip_text=ttip(F("product"), " ", F("start", "attr"), "–", F("end", "attr"), ": ", F("annualised_growth", "sum"), "/yr over ",
                            F("n_months", "sum"), " months"))
 wb.sheet(name="S4 Seasonality", ds=sea, mark="Bar", cols=[F("product"), F("month", kind="ok")], rows=[F("Seasonal Deviation")],
-         color=F("Above Average"), color_map={"true": SIGNAL, "false": ERR}, title="Seasonality · index − 1 by calendar month",
+         color=F("Above Average"), color_map={"true": SIGNAL, "false": ERR}, title="Seasonality · index − 1 by month · click a product",
          tooltip=[F("eta2", "avg"), F("perm_p_value", "avg")],
          tooltip_text=ttip(F("month", kind="ok"), ": ", F("Seasonal Deviation"), " vs centred 12M average (η² ", F("eta2", "avg"), ", p ",
                            F("perm_p_value", "avg"), ")"))
@@ -250,30 +264,31 @@ wb.sheet(name="S5 Anomaly log", ds=ano, mark="Text", rows=[F("period"), F("produ
          cols=[F(":Measure Names")], text=[F("Multiple Values")], measure_values=[F("daily_avg_mom", "sum"), F("robust_z_mom", "sum")],
          filters=[(F("level"), ["national"])], title="Anomaly log (national) · statistical anomaly, not verified as an operational incident")
 
-wb.sheet(name="U1 Gas balance", ds=un, mark="Area", cols=[Y], rows=[F("Multiple Values")],
+wb.sheet(name="U1 Gas balance", ds=uu, filters=[(F("State Filter"), None)], mark="Area", cols=[Y], rows=[F("Multiple Values")],
          measure_values=[F("Reinjection Rate"), F("Available Rate"), F("Own Use Rate"), F("Flaring Rate")],
          color_map={"Reinjection Rate": F700, "Available Rate": SAGE, "Own Use Rate": CONTEXT, "Flaring Rate": WARN},
          title="Where the gas goes · share of production (click a year)",
          tooltip_text=ttip(Y, ": reinjected ", F("Reinjection Rate"), ", available ", F("Available Rate"), ", own use ", F("Own Use Rate"),
                            ", flared ", F("Flaring Rate")))
-wb.sheet(name="U2 Production vs reinjection", ds=un, mark="Line", cols=[M], rows=[F("Multiple Values")],
+wb.sheet(name="U2 Production vs reinjection", ds=uu, filters=[(F("State Filter"), None)], mark="Line", cols=[M], rows=[F("Multiple Values")],
          measure_values=[F("Gas Production per Day"), F("Reinjection per Day")],
          color_map={"Gas Production per Day": F600, "Reinjection per Day": F700},
          title="Gas produced vs reinjected · thousand m³/d",
          tooltip_text=ttip(M, ": produced ", F("Gas Production per Day"), ", reinjected ", F("Reinjection per Day"), " (thousand m³/d)"))
-wb.sheet(name="U3 Flaring rate", ds=un, mark="Line", cols=[Y], rows=[F("Flaring Rate")], mark_color=WARN, title="Flaring rate",
+wb.sheet(name="U3 Flaring rate", ds=uu, filters=[(F("State Filter"), None)], mark="Line", cols=[Y], rows=[F("Flaring Rate")], mark_color=WARN, title="Flaring rate",
          tooltip=[F("Flaring per Day")], tooltip_text=ttip(Y, ": ", F("Flaring Rate"), " · ", F("Flaring per Day"), " thousand m³/d"))
-wb.sheet(name="U4 Offshore vs onshore rates", ds=ul, mark="Bar", cols=[F("location"), F(":Measure Names")], rows=[F("Multiple Values")],
+wb.sheet(name="U4 Offshore vs onshore rates", ds=uul, mark="Bar", cols=[F("location"), F(":Measure Names")], rows=[F("Multiple Values")],
          measure_values=[F("Reinjection Rate"), F("Available Rate"), F("Own Use Rate"), F("Flaring Rate")],
          color_map={"Reinjection Rate": F700, "Available Rate": SAGE, "Own Use Rate": CONTEXT, "Flaring Rate": WARN},
-         filters=[(F("Is Selected Year"), None)], title="Offshore vs onshore rates for p Year",
+         filters=[(F("Is Selected Year"), None), (F("State Filter"), None)], title="Offshore vs onshore rates · selected year and state",
          tooltip_text=ttip(F("location"), " ", F("year", "attr"), ": reinjected ", F("Reinjection Rate"), ", flared ", F("Flaring Rate")))
-wb.sheet(name="U5 Balance quality", ds=un, mark="Bar", cols=[M], rows=[F("Balance Gap %")], color=F("Outside Band"),
+wb.sheet(name="U5 Balance quality", ds=uu, filters=[(F("State Filter"), None)], mark="Bar", cols=[M], rows=[F("Balance Gap %")], color=F("Outside Band"),
          color_map={"true": ERR, "false": CONTEXT}, reflines=[-0.005, 0.005], title="Balance gap (band ±0.5 %)",
          tooltip_text=ttip(M, ": gap ", F("Balance Gap %")))
 for i, (nm, fld, sub) in enumerate([("REINJECTION RATE", "Reinjection Rate", "of gas produced"), ("FLARING RATE", "Flaring Rate", "flared or lost"),
                                     ("OWN-USE RATE", "Own Use Rate", "consumed on site"), ("AVAILABLE RATE", "Available Rate", "made available")]):
-    wb.sheet(name=f"U0{i + 1} KPI {fld}", ds=un, mark="Text", bg=FOREST if i == 0 else "#FFFFFF", filters=[(F("Is Selected Year"), None)],
+    wb.sheet(name=f"U0{i + 1} KPI {fld}", ds=uu, mark="Text", bg=FOREST if i == 0 else "#FFFFFF",
+             filters=[(F("Is Selected Year"), None), (F("State Filter"), None)],
              text=[F(fld), F("year", "attr")],
              label=[eyebrow(nm + " · ", SAGE if i == 0 else INK3),
                     {"field": F("year", "attr"), "font": "Consolas", "size": 8, "color": SAGE if i == 0 else INK3}, {"br": True},
@@ -283,7 +298,8 @@ wb.sheet(name="D1 Sources", ds=meta, mark="Text", rows=[F("source_key"), F("sour
          text=[F("Row")], title="Sources")
 
 # ---- dashboards (guide §5) -------------------------------------------------------------------------
-W, H, PAD, GAP = 1200, 900, 24, 12
+W, H, PAD, GAP = 1200, 926, 24, 12
+BAND, SHIFT = 106, 26
 COL = (W - 2 * PAD - 11 * GAP) / 12
 
 
@@ -296,31 +312,40 @@ def cw(n):
 
 
 FOOT = ("Source: ANP — production by state and location, snapshot 2026-11-18 · last month Sep 2026 (provisional) · "
-        "oil and gas are never summed · Stephany Alves")
+        "oil and gas are never summed · click a year, state or product to filter · Stephany Alves")
 PAGES = [("1 · Production Overview", "Overview"), ("2 · Regional Analysis", "Regional"), ("3 · Production Stability", "Stability"),
          ("4 · Natural Gas Utilization", "Gas use"), ("5 · Methodology", "Method")]
-PLABEL = {"p Product": "PRODUCT", "p Unit Oil": "OIL UNIT", "p Window": "WINDOW", "p Year": "YEAR"}
-CHIPS = [("p Product", 130), ("p Unit Oil", 90), ("p Window", 130), ("p Year", 80)]
+PLABEL = {"p Product": "PRODUCT", "p Unit Oil": "OIL UNIT", "p Window": "WINDOW", "p Year": "YEAR", "p State": "STATE"}
+CHIPS = [("p Product", 130), ("p Unit Oil", 80), ("p Window", 130), ("p Year", 80), ("p State", 110)]
 
 
 def header(title, current):
-    z = [{"type": "text", "x": 0, "y": 0, "w": W, "h": 80, "bg": FOREST, "border": False, "margin": 16,
+    z = [{"type": "text", "x": 0, "y": 0, "w": W, "h": BAND, "bg": FOREST, "border": False, "margin": 0, "runs": [{"text": " "}]},
+         {"type": "text", "x": PAD, "y": 10, "w": 560, "h": 54, "bg": FOREST, "border": False, "margin": 0,
           "runs": [{"text": "BRAZILIAN OIL & GAS · ANP MONTHLY", "font": "Consolas", "size": 8, "color": SAGE, "br": True},
                    {"text": title, "font": "Georgia", "size": 22, "color": ON_FOREST}]}]
-    x = 250
+    bw, gap = 96, 6
+    x = W - PAD - len(PAGES) * bw - (len(PAGES) - 1) * gap
     for name, cap in PAGES:
         on = name == current
-        z.append({"type": "nav", "target": name, "caption": cap, "x": x, "y": 6, "w": 80, "h": 22,
+        z.append({"type": "nav", "target": name, "caption": cap, "x": x, "y": 14, "w": bw, "h": 28,
                   "bg": SAGE if on else F600, "fg": FOREST if on else ON_FOREST})
-        x += 84
-    x = W - PAD
-    for p, w in reversed(CHIPS):
-        x -= w
-        z.append({"type": "text", "x": x, "y": 10, "w": w, "h": 20, "bg": FOREST, "border": False, "margin": 2,
+        x += bw + gap
+    x = PAD
+    for p, w in CHIPS:
+        lw = 8 + 7 * len(PLABEL[p])
+        z.append({"type": "text", "x": x, "y": 72, "w": lw, "h": 24, "bg": FOREST, "border": False, "margin": 4,
                   "runs": [{"text": PLABEL[p], "font": "Consolas", "size": 8, "color": SAGE}]})
-        z.append({"type": "param", "param": p, "x": x, "y": 32, "w": w, "h": 36, "bg": FOREST, "border": False, "title": False})
-        x -= 8
+        z.append({"type": "param", "param": p, "x": x + lw, "y": 70, "w": w, "h": 28, "bg": FOREST, "border": False, "title": False,
+                  "margin": 2})
+        x += lw + w + 18
     return z
+
+
+def body(zones):
+    for z in zones:
+        z["y"] += SHIFT
+    return zones
 
 
 def footer():
@@ -340,27 +365,38 @@ def note(text, c, n, y, h=26, color=INK2):
 
 
 Y0 = 92
+TOP, BOT = BAND + 12, H - 40      # body area between the dark band and the footer; rows share it with no orphan gaps
+p1 = TOP + 104 + 10
+p2 = p1 + 26
+p3 = p2 + 300 + GAP
 wb.dashboard(PAGES[0][0], W, H, header("Production Overview", PAGES[0][0]) + [
-    sheet("P1 KPI Latest daily avg", 0, 3, Y0, 110, False, FOREST), sheet("P2 KPI MoM", 3, 3, Y0, 110, False),
-    sheet("P3 KPI YoY", 6, 3, Y0, 110, False), sheet("P4 KPI % of peak", 9, 3, Y0, 110, False),
-    note("Record month in Sep 2026; growth has accelerated since mid-2022 after a 2016–2022 plateau.", 0, 12, 212),
-    sheet("P6 Historical daily average", 0, 12, 240, 340),
-    sheet("P5 Monthly volume", 0, 7, 592, 268), sheet("P7 Annual summary", 7, 5, 592, 268)] + footer(), PAGE)
+    sheet("P1 KPI Latest daily avg", 0, 3, TOP, 104, False, FOREST), sheet("P2 KPI MoM", 3, 3, TOP, 104, False),
+    sheet("P3 KPI YoY", 6, 3, TOP, 104, False), sheet("P4 KPI % of peak", 9, 3, TOP, 104, False),
+    note("Record month in Sep 2026; growth has accelerated since mid-2022 after a 2016–2022 plateau.", 0, 12, p1, 22),
+    sheet("P6 Historical daily average", 0, 12, p2, 300),
+    sheet("P5 Monthly volume", 0, 7, p3, BOT - p3), sheet("P7 Annual summary", 7, 5, p3, BOT - p3)] + footer(), PAGE)
+g1 = TOP + 26
+g2 = g1 + 360 + GAP
 wb.dashboard(PAGES[1][0], W, H, header("Regional Analysis", PAGES[1][0]) + [
-    note("97.6 % of oil is offshore; Rio de Janeiro's share is back to 87.8 %.", 0, 12, Y0),
-    sheet("G1 State share map", 0, 5, 120, 352), sheet("G2 State ranking", 5, 7, 120, 206), sheet("G5 Geographic HHI", 5, 7, 336, 136),
-    sheet("G3 Onshore vs offshore", 0, 6, 484, 376), sheet("G4 State trends", 6, 6, 484, 376)] + footer(), PAGE)
+    note("97.6 % of oil is offshore; Rio de Janeiro's share is back to 87.8 %.", 0, 12, TOP, 22),
+    sheet("G1 State share map", 0, 4, g1, 360), sheet("G2 State ranking", 4, 5, g1, 360), sheet("G5 Geographic HHI", 9, 3, g1, 360),
+    sheet("G3 Onshore vs offshore", 0, 6, g2, BOT - g2), sheet("G4 State trends", 6, 6, g2, BOT - g2)] + footer(), PAGE)
+s2 = g1 + 330 + GAP
 wb.dashboard(PAGES[2][0], W, H, header("Production Stability", PAGES[2][0]) + [
-    note("Anomalies are statistical; causes are not in the data.", 0, 12, Y0, color=WARN),
-    sheet("S1 Baseline band + anomalies", 0, 7, 120, 330), sheet("S5 Anomaly log", 7, 5, 120, 330),
-    sheet("S2 Volatility", 0, 4, 462, 398), sheet("S3 Growth regimes", 4, 4, 462, 398), sheet("S4 Seasonality", 8, 4, 462, 398)] + footer(), PAGE)
+    note("Anomalies are statistical; causes are not in the data.", 0, 12, TOP, 22, color=WARN),
+    sheet("S1 Baseline band + anomalies", 0, 7, g1, 330), sheet("S5 Anomaly log", 7, 5, g1, 330),
+    sheet("S2 Volatility", 0, 4, s2, BOT - s2), sheet("S3 Growth regimes", 4, 4, s2, BOT - s2), sheet("S4 Seasonality", 8, 4, s2, BOT - s2)]
+    + footer(), PAGE)
+u1 = TOP + 100 + 10
+u2 = u1 + 26
+u3 = u2 + 300 + GAP
 wb.dashboard(PAGES[3][0], W, H, header("Natural Gas Utilization", PAGES[3][0]) + [
-    sheet("U01 KPI Reinjection Rate", 0, 3, Y0, 100, False, FOREST), sheet("U02 KPI Flaring Rate", 3, 3, Y0, 100, False),
-    sheet("U03 KPI Own Use Rate", 6, 3, Y0, 100, False), sheet("U04 KPI Available Rate", 9, 3, Y0, 100, False),
-    note("Reinjection took 54.4 % of gas in 2025 (19.1 % in 2010); flaring fell to 2.8 %.", 0, 12, 200),
-    sheet("U1 Gas balance", 0, 7, 228, 320), sheet("U4 Offshore vs onshore rates", 7, 5, 228, 320),
-    sheet("U2 Production vs reinjection", 0, 6, 560, 300), sheet("U3 Flaring rate", 6, 3, 560, 300),
-    sheet("U5 Balance quality", 9, 3, 560, 300)] + footer(), PAGE)
+    sheet("U01 KPI Reinjection Rate", 0, 3, TOP, 100, False, FOREST), sheet("U02 KPI Flaring Rate", 3, 3, TOP, 100, False),
+    sheet("U03 KPI Own Use Rate", 6, 3, TOP, 100, False), sheet("U04 KPI Available Rate", 9, 3, TOP, 100, False),
+    note("Reinjection took 54.4 % of gas in 2025 (19.1 % in 2010); flaring fell to 2.8 %.", 0, 12, u1, 22),
+    sheet("U1 Gas balance", 0, 7, u2, 300), sheet("U4 Offshore vs onshore rates", 7, 5, u2, 300),
+    sheet("U2 Production vs reinjection", 0, 4, u3, BOT - u3), sheet("U3 Flaring rate", 4, 4, u3, BOT - u3),
+    sheet("U5 Balance quality", 8, 4, u3, BOT - u3)] + footer(), PAGE)
 METH = [
     ("UNITS", "Oil and NGL in m³ (daily m³/d; bbl/d = m³/d × 6.28981); natural gas in thousand m³ (thousand m³/d). Oil and gas are never summed."),
     ("DEFINITIONS", "K2 daily average = Σ volume / Σ days (recomputed at any grain) · K4 YoY on the same month · K14 share of national · "
@@ -369,6 +405,9 @@ METH = [
      "R4 provisional flag for 2026 · R5 national = Σ states, reconciled with the ANP yearbook (≤ 0.04 %)."),
     ("LIMITATIONS", "2026 data are provisional · UF gas-use rates are allocation-sensitive · no field-level data · no forecast · "
      "anomalies are statistical, not verified incidents."),
+    ("HOW TO USE", "The boxes in the band filter every page. Clicking a year (annual bars, gas balance, flaring), a state (map, ranking) "
+     "or a product (growth regimes, seasonality, anomaly log) sets them; pick All states in the box to reset. The state filter applies to "
+     "the regional and gas pages; production KPIs and stability views are national."),
     ("UPDATE", "From oil-gas-intelligence/src: ..\\..\\.venv\\Scripts\\python.exe -m oilgas.pipeline, then refresh the extracts."),
 ]
 mz, y = [], 440
@@ -378,12 +417,17 @@ for i, (k, v) in enumerate(METH):
                "runs": [{"text": k, "font": "Consolas", "size": 8, "color": INK3, "br": True}, {"text": v, "size": 10, "color": INK2}]})
     if i % 2 == 1:
         y += 132
-wb.dashboard(PAGES[4][0], W, H, header("Methodology", PAGES[4][0]) + [sheet("D1 Sources", 0, 12, Y0, 330)] + mz + footer(), PAGE)
+wb.dashboard(PAGES[4][0], W, H, header("Methodology", PAGES[4][0]) + body([sheet("D1 Sources", 0, 12, Y0, 330)] + mz) + footer(), PAGE)
 
 # ---- interactions (guide §6) ------------------------------------------------------------------------
 wb.param_action("Select year (P7)", PAGES[0][0], ["P7 Annual summary"], F("year", kind="ok"), ann, "p Year")
-wb.param_action("Select year (U1)", PAGES[3][0], ["U1 Gas balance"], Y, un, "p Year")
-wb.filter_action("State drill (G1/G2 → G4)", PAGES[1][0], ["G1 State share map", "G2 State ranking"], ["G4 State trends"])
+wb.param_action("Select year (U1)", PAGES[3][0], ["U1 Gas balance"], Y, uu, "p Year")
+wb.param_action("Select year (U3)", PAGES[3][0], ["U3 Flaring rate"], Y, uu, "p Year")
+wb.param_action("State from map (G1)", PAGES[1][0], ["G1 State share map"], F("uf"), pu, "p State")
+wb.param_action("State from ranking (G2)", PAGES[1][0], ["G2 State ranking"], F("uf"), pu, "p State")
+wb.param_action("Product from regimes (S3)", PAGES[2][0], ["S3 Growth regimes"], F("product"), brk, "p Product")
+wb.param_action("Product from seasonality (S4)", PAGES[2][0], ["S4 Seasonality"], F("product"), sea, "p Product")
+wb.param_action("Product from anomaly log (S5)", PAGES[2][0], ["S5 Anomaly log"], F("product"), ano, "p Product")
 
 if __name__ == "__main__":
     out = HERE / "Brazilian_Oil_Gas_Production.twb"

@@ -14,3 +14,4 @@ All dates 2026-11-18 (single build session). Commits are in the repository histo
 | 0.8.0 | 9 | KPI definitions and Tableau build guide in the SA Design System |
 | 1.0.0 | 10 | README, data sources, limitations, portfolio kit, executed walkthrough notebook. A clean rebuild reproduced all extracts and charts byte for byte; 90/90 tests |
 | 1.1.0 | Tableau build | Tableau workbook built from the guide (`tableau/build_workbook.py` → `.twbx`), all §7 values verified in Tableau Public 2026.3. Fixed: April oil seasonal value is −2.4 % (index 0.9765), not −2.3 % |
+| 1.2.0 | Tableau interactivity | Dashboards made interactive: new STATE filter (regional and gas pages; UF rows sum exactly to the national totals), clicks on years, states and products set the filters (parameter actions). Header with filters and page buttons aligned in the dark band; regular grid layout; worksheet tabs hidden. §7 values unchanged at the defaults |

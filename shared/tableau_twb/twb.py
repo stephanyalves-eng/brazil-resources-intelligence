@@ -249,6 +249,7 @@ class Sheet:
     color_seq: tuple | None = None          # (low hex, high hex) for a continuous colour field
     mark_size: float | None = None
     reflines: list = field(default_factory=list)   # constant values on the first rows measure
+    topn: tuple | None = None               # (dimension F, n, expression with {{refs}})
     fmt_note: str | None = None
 
 
@@ -261,6 +262,7 @@ class Workbook:
         self.dashboards: list[dict] = []
         self.actions: list[dict] = []
         self.palettes: dict[str, tuple] = {}
+        self.hide_sheets = True          # only dashboards appear as tabs (worksheets stay reachable from the dashboards)
         self.extract_dir = "C:/Users/steph/AppData/Local/Temp/claude/2969279fcb9c72d1/bcca2772-7244-432c-82bb-04d37b4c745f/scratchpad/hyper"
 
     def datasource(self, caption, directory, filename, columns) -> Datasource:
@@ -276,9 +278,10 @@ class Workbook:
     def dashboard(self, name: str, width: int, height: int, zones: list[dict], background: str):
         self.dashboards.append({"name": name, "w": width, "h": height, "zones": zones, "bg": background})
 
-    def param_action(self, caption, dashboard, sheets, field, ds, param):
+    def param_action(self, caption, dashboard, sheets, field, ds, param, clear=None):
+        """Click a mark in `sheets` -> set `param` from `field`; deselecting sets it back to `clear` (a string member)."""
         self.actions.append({"kind": "param", "caption": caption, "dashboard": dashboard, "sheets": sheets,
-                             "field": ds.ref(field), "param": self.params.ref(param)})
+                             "field": ds.ref(field), "param": self.params.ref(param), "clear": clear})
 
     def filter_action(self, caption, dashboard, sources, targets):
         self.actions.append({"kind": "filter", "caption": caption, "dashboard": dashboard, "sources": sources, "targets": targets})
@@ -293,10 +296,12 @@ class Workbook:
             allsheets = self._dash_sheets(a["dashboard"])
             nm = f"[Action{i}_{_id('act', self.title, a['caption'], n=32).upper()}]"
             if a["kind"] == "param":
+                clr = ("<clear-option type='do-nothing' value='s:LROOT:' />" if a["clear"] is None
+                       else f"<clear-option type='assign-fixed-value' value={q('s:LROOT:' + str(a['clear']))} />")
                 excl = "".join(f"<exclude-sheet name={q(x)} />" for x in allsheets if x not in a["sheets"])
                 out.append(f"<edit-parameter-action caption={q(a['caption'])} name={q(nm)}><activation type='on-select' />"
                            f"<source dashboard={q(a['dashboard'])} type='sheet'>{excl}</source><agg-type type='attr' />"
-                           f"<clear-option type='do-nothing' value='s:LROOT:' /><params><param name='source-field' value={q(a['field'])} />"
+                           f"{clr}<params><param name='source-field' value={q(a['field'])} />"
                            f"<param name='target-parameter' value={q(a['param'])} /></params></edit-parameter-action>")
             else:
                 excl = "".join(f"<exclude-sheet name={q(x)} />" for x in allsheets if x not in a["sources"])
@@ -389,6 +394,19 @@ class Workbook:
             collect(c)
             n, x = ds.instance(f)
             insts[n] = x
+        if s.topn:
+            f0, _, expr = s.topn
+            n, x = ds.instance(f0)
+            insts[n] = x
+            collect(ds.column(f0.name))
+            for key in re.findall(r"\{\{(.+?)\}\}", expr):
+                if key in ds.calcs:
+                    collect(ds.calcs[key])
+                elif key in self.params.cols:
+                    params_used.add(key)
+            for base in re.findall(r"\[([A-Za-z_][A-Za-z0-9_]*)\]", expr):
+                if f"[{base}]" in ds.base:
+                    collect(ds.base[f"[{base}]"])
         dep = "".join(decls) + "".join(insts.values())
         pdep = ""
         if params_used:
@@ -420,11 +438,20 @@ class Workbook:
             mv_filter = (f"<filter class='categorical' column={q('[' + ds.name + '].[:Measure Names]')}>"
                          f"<groupfilter function='union' user:op='manual'>{mems}</groupfilter></filter>")
             slices.append(f"[{ds.name}].[:Measure Names]")
+        if s.topn:
+            f, n, expr = s.topn
+            lvl = ds.instance(f)[0]
+            filt += (f"<filter class='categorical' column={q(ds.ref(f))}><groupfilter count={q(n)} end='top' function='end' units='records' "
+                     f"user:ui-marker='end' user:ui-top-by-field='true'><groupfilter direction='DESC' expression={q(ds._resolve(expr))} "
+                     f"function='order' user:ui-marker='order'><groupfilter function='level-members' level={q(lvl)} "
+                     f"user:ui-enumeration='all' user:ui-marker='enumerate' /></groupfilter></groupfilter></filter>")
+            slices.append(ds.ref(f))
         sort = ""
         if s.sort:
             sort = f"<sort class='computed' column={q(ds.ref(s.sort[0]))} direction={q(s.sort[2])} using={q(ds.ref(s.sort[1]))} />"
         slices_xml = f"<slices>{''.join(f'<column>{escape(x)}</column>' for x in slices)}</slices>" if slices else ""
-        view = (f"<view><datasources>{dsl}</datasources>{pdep}<datasource-dependencies datasource={q(ds.name)}>{dep}</datasource-dependencies>"
+        msrc = "<mapsources><mapsource name='Tableau' /></mapsources>" if s.geo else ""
+        view = (f"<view><datasources>{dsl}</datasources>{msrc}{pdep}<datasource-dependencies datasource={q(ds.name)}>{dep}</datasource-dependencies>"
                 f"{mv_filter}{filt}{sort}{slices_xml}<aggregation value='true' /></view>")
 
         enc = []
@@ -486,6 +513,8 @@ class Workbook:
             mn = ds.color_maps.setdefault("[:Measure Names]", {})
             for k, v in s.color_map.items():
                 mn[f"[{ds.name}].{ds.instance(F(k, 'sum') if k in ds.base or '[' + k + ']' in ds.base else F(k))[0]}"] = v
+        if s.geo:
+            tstyle.append("<style-rule element='map'><format attr='washout' value='0.0' /></style-rule>")
         if s.mark == "Text" and not (s.rows or s.cols):
             tstyle.append("<style-rule element='cell'><format attr='text-align' value='left' /></style-rule>")
 
@@ -564,7 +593,8 @@ class Workbook:
                     "<edge name='top'><strip size='2147483647'><card type='columns' /></strip><strip size='2147483647'><card type='rows' /></strip>"
                     "<strip size='31'><card type='title' /></strip></edge></cards>")
         # worksheet windows stay visible: a dashboard zone pointing at a hidden worksheet window fails to load
-        windows = "".join(f"<window class='worksheet' name={q(s.name)}>{cards_ws}<simple-id uuid={q(_uuid('win', self.title, s.name))} /></window>"
+        hid = " hidden='true'" if self.hide_sheets else ""
+        windows = "".join(f"<window class='worksheet'{hid} name={q(s.name)}>{cards_ws}<simple-id uuid={q(_uuid('win', self.title, s.name))} /></window>"
                           for s in self.sheets)
         # schema (2026.3): dashboard window = (viewpoints, active, device-preview, simple-id)
         def vps(d):
@@ -587,6 +617,8 @@ class Workbook:
                           + "</color-palette>" for n, cs in self.palettes.items()) + "</preferences>"
                 "<style><style-rule element='all'><format attr='font-family' value='Arial' /></style-rule></style>"
                 f"<datasources>{ds_xml}</datasources>"
+                + ("<mapsources><mapsource name='Tableau' /></mapsources>" if any(x.geo for x in self.sheets) else "")
+                + 
                 f"{self._actions_xml()}<worksheets>{ws_xml}</worksheets>"
                 f"<dashboards>{''.join(self._dash_xml(d) for d in self.dashboards)}</dashboards>"
                 f"<windows source-height='31'>{windows}</windows></workbook>\n")
