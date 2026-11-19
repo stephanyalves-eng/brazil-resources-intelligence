@@ -1,4 +1,4 @@
-# Industrial Data Analytics Portfolio
+# Brazil Resources Intelligence
 
 Two independent, reproducible analytics projects on **official Brazilian open data** for extractive industries. Each one has
 its own pipeline, tests and documentation, and both share one visual identity (Stephany Alves Design System).
@@ -22,7 +22,7 @@ its own pipeline, tests and documentation, and both share one visual identity (S
 ## Repository structure
 
 ```
-industrial-data-analytics/
+brazil-resources-intelligence/
 ├── mining-intelligence/      data/ (raw|interim|processed, raw not versioned) · sql/ · src/ · seeds/ · tests/ · tableau/ · docs/
 ├── oil-gas-intelligence/     data/ · src/oilgas/ · tests/ · notebooks/ · tableau/ · assets/ · docs/
 ├── shared/
@@ -37,7 +37,8 @@ industrial-data-analytics/
 ## Quick start (Windows)
 
 ```powershell
-cd C:\Tableau\industrial-data-analytics
+git clone https://github.com/stephanyalves-eng/brazil-resources-intelligence.git
+cd brazil-resources-intelligence
 py -3.12 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r mining-intelligence\requirements.txt -r oil-gas-intelligence\requirements.txt
 ```

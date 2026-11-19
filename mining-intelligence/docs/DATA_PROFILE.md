@@ -4,7 +4,7 @@ Full-file profiling of the raw files listed in `data/raw/MANIFEST.csv` (download
 Reproduce with:
 
 ```powershell
-cd C:\Tableau\industrial-data-analytics\mining-intelligence
+cd brazil-resources-intelligence\mining-intelligence
 ..\.venv\Scripts\python.exe src\run_sql.py sql\00_profile_raw.sql sql\01_profile_followups.sql --out data\interim\profile
 ```
 

@@ -16,7 +16,7 @@
 Reproduce:
 
 ```powershell
-cd C:\Tableau\industrial-data-analytics\oil-gas-intelligence\src
+cd brazil-resources-intelligence\oil-gas-intelligence\src
 ..\..\.venv\Scripts\python.exe -m oilgas.eda
 ..\..\.venv\Scripts\python.exe -m oilgas.stats_analysis
 ..\..\.venv\Scripts\python.exe -m oilgas.charts

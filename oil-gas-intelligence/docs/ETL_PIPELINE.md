@@ -30,7 +30,7 @@ Modules 5–8 (EDA, statistics, QA, Tableau export) follow in Phases 6–8.
 ## Run (Windows)
 
 ```powershell
-cd C:\Tableau\industrial-data-analytics\oil-gas-intelligence\src
+cd brazil-resources-intelligence\oil-gas-intelligence\src
 ..\..\.venv\Scripts\python.exe -m oilgas.pipeline              # profile -> clean -> features (~5 s)
 ..\..\.venv\Scripts\python.exe -m oilgas.pipeline --download   # re-download raw first
 ..\..\.venv\Scripts\python.exe -m oilgas.cleaning              # any single step

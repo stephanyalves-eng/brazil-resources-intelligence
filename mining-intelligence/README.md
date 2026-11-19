@@ -41,7 +41,7 @@ flowchart LR
 ## Run it (Windows, free tools)
 
 ```powershell
-cd C:\Tableau\industrial-data-analytics
+cd brazil-resources-intelligence   # repository root (git clone https://github.com/stephanyalves-eng/brazil-resources-intelligence.git)
 py -3.12 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r mining-intelligence\requirements.txt
 ```

@@ -39,7 +39,7 @@ flowchart LR
 ## Run (Windows)
 
 ```powershell
-cd C:\Tableau\industrial-data-analytics\mining-intelligence
+cd brazil-resources-intelligence\mining-intelligence
 powershell -ExecutionPolicy Bypass -File src\run_pipeline.ps1            # build from existing raw files (~7 s)
 powershell -ExecutionPolicy Bypass -File src\run_pipeline.ps1 -Download  # re-download raw first (~327 MB)
 ```

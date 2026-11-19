@@ -3,7 +3,7 @@
 Profiling of the raw files in `data/raw/MANIFEST.csv` (downloaded 2026-11-18). Reproduce with:
 
 ```powershell
-cd C:\Tableau\industrial-data-analytics\oil-gas-intelligence\src
+cd brazil-resources-intelligence\oil-gas-intelligence\src
 ..\..\.venv\Scripts\python.exe -m oilgas.profiling
 ```
 
