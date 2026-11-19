@@ -1,7 +1,7 @@
 # Portfolio Kit — Brazilian Oil & Gas Production Analytics
 
 Numbers come from the 2026-11-18 build ([ANALYSIS_FINDINGS.md](ANALYSIS_FINDINGS.md)). There are no invented impact metrics.
-Replace `[GitHub link]` and `[Tableau Public link]` when available; the dashboard is built locally, not yet published.
+Replace `[GitHub link]` when the repository is public. Tableau Public: https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Oil_Gas_Production/1ProductionOverview
 
 ---
 
@@ -114,4 +114,4 @@ matplotlib, pytest, Tableau Public. [GitHub link]
 ### Personal portfolio — card
 **Oil & Gas Intelligence · Python**. *Is Brazil's record production steady growth, a new phase, or a data artefact?* A modular,
 tested pipeline over 30 years of official ANP data.
-`Python` `pandas` `Statistics` `Tableau` → [GitHub link] · [Tableau Public link]
+`Python` `pandas` `Statistics` `Tableau` → [GitHub link] · [Tableau Public](https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Oil_Gas_Production/1ProductionOverview)

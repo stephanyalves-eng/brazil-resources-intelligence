@@ -5,12 +5,12 @@ its own pipeline, tests and documentation, and both share one visual identity (S
 
 | Project | Core skill | Data | Questions | Status |
 |---|---|---|---|---|
-| [**Brazilian Mining Performance & Market Concentration**](mining-intelligence/README.md) | **SQL** (DuckDB): staging → marts, window functions, HHI | ANM AMB (2010–2025) + CFEM royalties (2.43 M rows, 2004–2026) | Price vs volume, commodity and state mix, geographic vs company concentration | Pipeline, analysis, 117 tests ✅ · dashboard built (local `.twbx`) |
-| [**Brazilian Oil & Gas Production Analytics**](oil-gas-intelligence/README.md) | **Python** (pandas, NumPy): modular CLI pipeline, statistics | ANP monthly production by state and location (1997–2026) + Anuário 2026 | Growth regimes, regional concentration, stability, gas utilisation | Pipeline, analysis, 90 tests ✅ · dashboard built (local `.twbx`) |
+| [**Brazilian Mining Performance & Market Concentration**](mining-intelligence/README.md) | **SQL** (DuckDB): staging → marts, window functions, HHI | ANM AMB (2010–2025) + CFEM royalties (2.43 M rows, 2004–2026) | Price vs volume, commodity and state mix, geographic vs company concentration | Pipeline, analysis, 117 tests ✅ · [dashboard on Tableau Public](https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Mining_Performance/1ExecutiveOverview) |
+| [**Brazilian Oil & Gas Production Analytics**](oil-gas-intelligence/README.md) | **Python** (pandas, NumPy): modular CLI pipeline, statistics | ANP monthly production by state and location (1997–2026) + Anuário 2026 | Growth regimes, regional concentration, stability, gas utilisation | Pipeline, analysis, 90 tests ✅ · [dashboard on Tableau Public](https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Oil_Gas_Production/1ProductionOverview) |
 
-> Both Tableau dashboards are **built and verified** against the build guides' checklists and saved locally as packaged
-> workbooks (`*/tableau/*.twbx`, screenshots in `*/assets/tableau_*.png`). They are **not published yet**; links will be added
-> here once they are.
+> Both Tableau dashboards are **built, verified** against the build guides' checklists and **published on Tableau Public**:
+> [Brazilian Mining Performance](https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Mining_Performance/1ExecutiveOverview) · [Brazilian Oil & Gas Production](https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Oil_Gas_Production/1ProductionOverview).
+> The packaged workbooks are also in the repository (`*/tableau/*.twbx`, screenshots in `*/assets/tableau_*.png`).
 
 ## Principles applied
 - Real public data only, raw files preserved byte-for-byte with SHA-256 manifests.

@@ -7,8 +7,8 @@ the gas that is produced.
 > **Status (2026-11-18):** modular pipeline, analysis, charts, tests (90/90 passing) and Tableau-ready extracts are complete.
 > The Tableau workbook is **built and verified** against the build guide's checklist
 > ([`tableau/Brazilian_Oil_Gas_Production.twbx`](tableau/Brazilian_Oil_Gas_Production.twbx), screenshots in `assets/tableau_*.png`)
-> but **not yet published**.
-> Tableau Public link: *to be added after publishing*.
+> and **published on Tableau Public**.
+> **Tableau Public:** [Brazilian Oil & Gas Production Analytics](https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Oil_Gas_Production/1ProductionOverview)
 
 ## Business questions
 1. How much oil and gas does Brazil produce per day, and how fast is it growing?

@@ -1,8 +1,8 @@
 # Tableau Build Guide — Brazilian Oil & Gas Production Analytics
 
 > **Status (2026-11-18):** built. `tableau/Brazilian_Oil_Gas_Production.twbx` was generated from this guide by
-> `tableau/build_workbook.py`, opened in Tableau Public 2026.3, checked against §7 (all values match) and saved locally. It is
-> not published. The manual procedure below remains the reference.
+> `tableau/build_workbook.py`, opened in Tableau Public 2026.3, checked against §7 (all values match) and saved locally. Published at
+> https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Oil_Gas_Production/1ProductionOverview. The manual procedure below remains the reference.
 > There is no reliable free way to generate a Tableau Public workbook automatically. Build it by hand in Tableau Public from
 > `tableau/data/`, then check the numbers against §7.
 

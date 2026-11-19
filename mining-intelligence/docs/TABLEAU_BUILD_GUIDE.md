@@ -1,8 +1,8 @@
 # Tableau Build Guide — Brazilian Mining Performance & Market Concentration
 
 > **Status (2026-11-18):** built. `tableau/Brazilian_Mining_Performance.twbx` was generated from this guide by
-> `tableau/build_workbook.py`, opened in Tableau Public 2026.3, checked against §7 (all values match) and saved locally. It is
-> not published. The manual procedure below remains the reference.
+> `tableau/build_workbook.py`, opened in Tableau Public 2026.3, checked against §7 (all values match) and saved locally. Published at
+> https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Mining_Performance/1ExecutiveOverview. The manual procedure below remains the reference.
 > There is no reliable free way to generate a Tableau Public workbook automatically, so the dashboard is built by hand in
 > Tableau Public (free) from the files in `tableau/data/`. Every number to verify after building is listed in §7.
 

@@ -7,8 +7,8 @@ the sector is geographically, by commodity and by company.
 > **Status (2026-11-18):** pipeline, analysis, tests (117/117 passing) and Tableau-ready extracts are complete. The Tableau
 > workbook is **built and verified** against the build guide's checklist
 > ([`tableau/Brazilian_Mining_Performance.twbx`](tableau/Brazilian_Mining_Performance.twbx), screenshots in `assets/tableau_*.png`)
-> but **not yet published**.
-> Tableau Public link: *to be added after publishing*.
+> and **published on Tableau Public**.
+> **Tableau Public:** [Brazilian Mining Performance & Market Concentration](https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Mining_Performance/1ExecutiveOverview)
 
 ## Business questions
 1. How did the value of mineral sales evolve, and was it price or volume?

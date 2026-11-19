@@ -1,8 +1,8 @@
 # Portfolio Kit — Brazilian Mining Performance & Market Concentration
 
 Every number below comes from the 2026-11-18 build ([ANALYSIS_FINDINGS.md](ANALYSIS_FINDINGS.md)). There are no business-impact
-claims (savings, productivity), because this is an analysis of public data, not a client engagement. Replace `[GitHub link]` and
-`[Tableau Public link]` once they exist. **Do not post the Tableau link before the dashboard is actually published.**
+claims (savings, productivity), because this is an analysis of public data, not a client engagement. Replace `[GitHub link]` once the
+repository is public. Tableau Public: https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Mining_Performance/1ExecutiveOverview
 
 ---
 
@@ -120,4 +120,4 @@ Tableau Public. [GitHub link]
 ### Personal portfolio — card
 **Mining Intelligence · SQL**. *Which commodities, states and companies really drive Brazil's R$ 282 bn mining sector?* A
 layered DuckDB pipeline over official ANM data, with concentration metrics and a reproducible QA suite.
-`SQL` `DuckDB` `Data Quality` `Tableau` → [GitHub link] · [Tableau Public link]
+`SQL` `DuckDB` `Data Quality` `Tableau` → [GitHub link] · [Tableau Public](https://public.tableau.com/app/profile/stephany.alves/viz/Brazilian_Mining_Performance/1ExecutiveOverview)
