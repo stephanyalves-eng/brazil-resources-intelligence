@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from xml.sax.saxutils import escape, quoteattr
 
 AGG = {"sum": ("Sum", "qk"), "avg": ("Avg", "qk"), "max": ("Max", "qk"), "min": ("Min", "qk"),
-       "cnt": ("Count", "qk"), "cntd": ("CountD", "qk"), "tmn": ("Month-Trunc", "qk"), "yr": ("Year", "ok"),
+       "cnt": ("Count", "qk"), "cntd": ("CountD", "qk"), "tmn": ("Month-Trunc", "qk"), "yr": ("Year", "ok"), "tyr": ("Year-Trunc", "qk"),
        "attr": ("Attribute", "nk")}
 AGG_FUNCS = re.compile(r"\b(SUM|AVG|MIN|MAX|COUNT|COUNTD|ATTR|TOTAL|RUNNING_SUM|LOOKUP|RANK|WINDOW_\w+)\s*\(", re.I)
 
@@ -47,7 +47,7 @@ def _uuid(*parts: str) -> str:
     return "{" + str(uuid.uuid5(uuid.NAMESPACE_URL, "|".join(parts))).upper() + "}"
 
 
-@dataclass
+@dataclass(frozen=True)
 class F:
     name: str
     agg: str | None = None
@@ -250,6 +250,10 @@ class Sheet:
     mark_size: float | None = None
     reflines: list = field(default_factory=list)   # constant values on the first rows measure
     topn: tuple | None = None               # (dimension F, n, expression with {{refs}})
+    axis_titles: dict = field(default_factory=dict)   # {F: "title"}; "" hides the title
+    axis_range: tuple | None = None         # (rows measure F, min, max) fixed axis
+    row_labels: bool | None = None          # show row field labels (default: only for text tables)
+    font_size: int = 10
     fmt_note: str | None = None
 
 
@@ -517,6 +521,29 @@ class Workbook:
             tstyle.append("<style-rule element='map'><format attr='washout' value='0.0' /></style-rule>")
         if s.mark == "Text" and not (s.rows or s.cols):
             tstyle.append("<style-rule element='cell'><format attr='text-align' value='left' /></style-rule>")
+
+        # readability: no field-label headers ("year", "period_date"), no date-axis titles, larger fonts
+        ax = []
+        for f in s.cols:
+            if f.agg in ("tmn", "tyr"):
+                ax.append(f"<format attr='title' class='0' field={q(ds.ref(f))} scope='cols' value='' />")
+        for shelf_, sc in ((s.rows, "rows"), (s.cols, "cols")):
+            if s.measure_values and any(f.name == "Multiple Values" for f in shelf_):
+                ax.append(f"<format attr='title' class='0' field={q('[' + ds.name + '].[Multiple Values]')} scope={q(sc)} value='' />")
+        for f, t in s.axis_titles.items():
+            sc = "cols" if any(ds.ref(f) == ds.ref(c) for c in s.cols) else "rows"
+            ax.append(f"<format attr='title' class='0' field={q(ds.ref(f))} scope={q(sc)} value={q(t)} />")
+        if s.axis_range:
+            f, lo, hi = s.axis_range
+            ax.append(f"<encoding attr='space' class='0' field={q(ds.ref(f))} field-type='quantitative' max={q(hi)} min={q(lo)} "
+                      f"range-type='fixed' scope='rows' type='space' />")
+        if ax:
+            tstyle.insert(0, f"<style-rule element='axis'>{''.join(ax)}</style-rule>")
+        show_rows = s.row_labels if s.row_labels is not None else (s.mark == "Text")
+        ws = [f"<format attr='font-size' value={q(s.font_size)} />", "<format attr='display-field-labels' scope='cols' value='false' />"]
+        if not show_rows:
+            ws.append("<format attr='display-field-labels' scope='rows' value='false' />")
+        tstyle.append(f"<style-rule element='worksheet'>{''.join(ws)}</style-rule>")
 
         def shelf(items):
             if not items:

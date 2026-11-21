@@ -225,6 +225,7 @@ wb.sheet(name="R4 Volume vs unit value", ds=pv, mark="Bar", cols=[YEAR], rows=[F
 wb.sheet(name="R5 Production volume", ds=ufs, mark="Line", cols=[YEAR], rows=[F("production_qty", "sum")],
          filters=[(F("Is Focus Substance"), None), (F("State Filter"), None)], mark_color=F600,
          title="Production volume (selected substance and state)", tooltip=[F("unit", "attr")],
+         axis_titles={F("production_qty", "sum"): "quantity (unit in tooltip)"},
          tooltip_text=tt(YEAR, ": ", F("production_qty", "sum"), " ", F("unit", "attr")))
 
 wb.sheet(name="M1 HHI over time", ds=con, mark="Line", cols=[YEAR], rows=[F("HHI")], mark_color=F700,
@@ -255,6 +256,7 @@ wb.sheet(name="M4 Municipal concentration", ds=cfm, mark="Bar", rows=[F("Municip
                          F("main_substance_group"), ". CFEM = royalty collected"))
 wb.sheet(name="M5 Mix change", ds=sub, mark="Area", cols=[YEAR], rows=[F("share_of_national", "sum")],
          color=F("Highlight Substance"), color_map=HL, title="Mix change · share of value", detail=[F("substance_group")],
+         axis_titles={F("share_of_national", "sum"): ""},
          tooltip_text=tt(F("substance_group"), " ", YEAR, ": ", F("share_of_national", "sum")))
 wb.sheet(name="M6 CFEM per R$ of sales", ds=amc, mark="Line", cols=[YEAR], rows=[F("Multiple Values")],
          measure_values=[F("CFEM per R$ of Sales"), F("CFEM per R$ of Sales (selected)")],
@@ -323,8 +325,8 @@ def body(zones):
     return zones
 
 
-def footer():
-    return [{"type": "text", "x": PAD, "y": H - 34, "w": W - 2 * PAD, "h": 28, "border": False,
+def footer(h=None):
+    return [{"type": "text", "x": PAD, "y": (h or H) - 34, "w": W - 2 * PAD, "h": 28, "border": False,
              "runs": [{"text": FOOT, "size": 8, "color": INK3}]}]
 
 
@@ -353,20 +355,24 @@ wb.dashboard(D1, W, H, header("Executive Overview", GLOBAL, D1) + [
     note("Iron ore is 56.7 % of value in 2025, down from 75.8 % in 2021.", 7, 5, y1, 22),
     sheet("E5 Annual evolution", 0, 7, y2, 322), sheet("E6 Regional share map", 7, 5, y2, 322),
     sheet("E7 Top substances", 0, 12, y3, BOT - y3)] + footer(), PAGE)
-r2 = TOP + 372 + GAP
-wb.dashboard(PAGES[1][0], W, H, header("Regional & Commodity Analysis", GLOBAL, PAGES[1][0]) + [
-    sheet("R1 State ranking", 0, 5, TOP, 372), sheet("R2 State x substance", 5, 7, TOP, 372),
-    sheet("R3 Substance evolution", 0, 4, r2, BOT - r2), sheet("R4 Volume vs unit value", 4, 4, r2, BOT - r2),
-    sheet("R5 Production volume", 8, 4, r2, BOT - r2)] + footer(), PAGE)
+H2 = 1120
+r2 = TOP + 380 + GAP
+r3 = r2 + 330 + GAP
+wb.dashboard(PAGES[1][0], W, H2, header("Regional & Commodity Analysis", GLOBAL, PAGES[1][0]) + [
+    sheet("R1 State ranking", 0, 5, TOP, 380), sheet("R2 State x substance", 5, 7, TOP, 380),
+    sheet("R3 Substance evolution", 0, 6, r2, 330), sheet("R4 Volume vs unit value", 6, 6, r2, 330),
+    sheet("R5 Production volume", 0, 12, r3, H2 - 40 - r3)] + footer(H2), PAGE)
+H3 = 1190
 m1 = TOP + 26
-m2 = m1 + 320 + GAP
-wb.dashboard(PAGES[2][0], W, H, header("Market Structure", [("p CFEM Year", 90), ("p Substance", 180), ("p State", 110),
-                                                            ("p Concentration Type", 210)], PAGES[2][0]) + [
+m2 = m1 + 290 + GAP
+m3 = m2 + 370 + GAP
+wb.dashboard(PAGES[2][0], W, H3, header("Market Structure", [("p CFEM Year", 90), ("p Substance", 180), ("p State", 110),
+                                                             ("p Concentration Type", 210)], PAGES[2][0]) + [
     note("Geographic concentration ≠ business concentration: states (AMB value) and CNPJ roots (CFEM) answer different questions.",
          0, 12, TOP, 22, color=WARN),
-    sheet("M1 HHI over time", 0, 4, m1, 320), sheet("M6 CFEM per R$ of sales", 4, 4, m1, 320), sheet("M5 Mix change", 8, 4, m1, 320),
-    sheet("M2 Company Pareto", 0, 4, m2, BOT - m2), sheet("M3 Concentration table", 4, 4, m2, BOT - m2),
-    sheet("M4 Municipal concentration", 8, 4, m2, BOT - m2)] + footer(), PAGE)
+    sheet("M1 HHI over time", 0, 6, m1, 290), sheet("M6 CFEM per R$ of sales", 6, 6, m1, 290),
+    sheet("M2 Company Pareto", 0, 6, m2, 370), sheet("M4 Municipal concentration", 6, 6, m2, 370),
+    sheet("M3 Concentration table", 0, 7, m3, H3 - 40 - m3), sheet("M5 Mix change", 7, 5, m3, H3 - 40 - m3)] + footer(H3), PAGE)
 METH = [
     ("DEFINITIONS", "K1 value of beneficiated sales (AMB, nominal R$) · K13 HHI = Σ share² × 10,000 (≥ 2,500 highly concentrated, "
      "1,500–2,500 moderate) · K15 CFEM = royalty collected, not revenue."),
