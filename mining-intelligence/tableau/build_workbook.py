@@ -115,6 +115,14 @@ sub.calc("KPI Focus Share", f"SUM(IF [year] = {{{{p Year}}}} AND [substance_grou
 sub.calc("KPI Top3 Share", "SUM(IF [year] = {{p Year}} AND [rank_in_year] <= 3 THEN [sale_value_brl] END) "
          "/ SUM(IF [year] = {{p Year}} THEN [sale_value_brl] END)", "real", PCT)
 sub.calc("Focus Label", f"UPPER({FOCUS})", "string")
+# E3 follows the state filter: share and rank of the focus substance inside the selected state(s)
+STATE_COND = f"({UF_ALL} OR [uf] = {{{{p State}}}})"
+ufs.calc("Sub Value Sel", f"{{FIXED [substance_group] : SUM(IF [year] = {{{{p Year}}}} AND {STATE_COND} THEN [sale_value_brl] END)}}", "real", INT)
+ufs.calc("Focus Value Sel", f"{{FIXED : SUM(IF [year] = {{{{p Year}}}} AND {STATE_COND} AND [substance_group] = {FOCUS} THEN [sale_value_brl] END)}}", "real", INT)
+ufs.calc("KPI Focus Share", "MIN({{Focus Value Sel}}) / SUM(IF [year] = {{p Year}} THEN [sale_value_brl] END)", "real", PCT)
+ufs.calc("Focus Rank", "COUNTD(IF {{Sub Value Sel}} > {{Focus Value Sel}} THEN [substance_group] END) + 1", "integer", "n0;-0")
+ufs.calc("Focus Label", f"UPPER({FOCUS})", "string")
+ufs.calc("Place Label", f'(IF {UF_ALL} THEN "BRAZIL" ELSE {{{{p State}}}} END)', "string")
 sub.calc("Focus Rank", f"MIN(IF [year] = {{{{p Year}}}} AND [substance_group] = {FOCUS} THEN [rank_in_year] END)", "integer", "n0;-0")
 
 pv.calc("Unit Value", "SUM([sale_value_brl]) / SUM([sale_qty])", "real", "n#,##0.00")
@@ -176,11 +184,12 @@ wb.sheet(name="E1 KPI Value", ds=ufs, mark="Text", bg=FOREST, filters=SEL_SUB_UF
 wb.sheet(name="E2 KPI CAGR", ds=ufs, mark="Text", filters=SEL_SUB_UF, text=[F("KPI CAGR since 2010")],
          label=[eyebrow("GROWTH SINCE 2010 (CAGR, NOMINAL)"), {"br": True}, {"field": F("KPI CAGR since 2010"), "size": 24},
                 {"br": True}, {"text": "compound annual growth of sales value", "size": 9, "color": INK3}])
-wb.sheet(name="E3 KPI Substance share", ds=sub, mark="Text", text=[F("Focus Label"), F("KPI Focus Share"), F("Focus Rank"), F("KPI Top3 Share")],
-         label=[eyebrow("NATIONAL SHARE · "), {"field": F("Focus Label"), "font": "Consolas", "size": 8, "color": INK3}, {"br": True},
+wb.sheet(name="E3 KPI Substance share", ds=ufs, mark="Text", filters=[(F("State Filter"), None)],
+         text=[F("Focus Label"), F("KPI Focus Share"), F("Focus Rank"), F("Place Label")],
+         label=[eyebrow("SHARE OF VALUE · "), {"field": F("Focus Label"), "font": "Consolas", "size": 8, "color": INK3}, {"br": True},
                 {"field": F("KPI Focus Share"), "size": 24}, {"br": True}, {"text": "rank ", "size": 9, "color": INK3},
-                {"field": F("Focus Rank"), "size": 9, "color": INK3}, {"text": " · top 3: ", "size": 9, "color": INK3},
-                {"field": F("KPI Top3 Share"), "size": 9, "color": INK3}])
+                {"field": F("Focus Rank"), "size": 9, "color": INK3}, {"text": " among substances in ", "size": 9, "color": INK3},
+                {"field": F("Place Label"), "size": 9, "color": INK3}])
 wb.sheet(name="E4 KPI Geographic HHI", ds=con, mark="Text", text=[F("E4 Label"), F("HHI"), F("hhi_band", "attr")],
          filters=[(F("E4 Match"), None)],
          label=[{"field": F("E4 Label"), "font": "Consolas", "size": 8, "color": INK3}, {"br": True}, {"field": F("HHI"), "size": 24},
@@ -403,6 +412,9 @@ wb.param_action("State from R2", D2, ["R2 State x substance"], F("uf"), ufs, "p 
 wb.param_action("Substance from R2", D2, ["R2 State x substance"], F("substance_group"), ufs, "p Substance")
 wb.param_action("Substance from R3", D2, ["R3 Substance evolution"], F("substance_group"), ufs, "p Substance")
 wb.param_action("Year from R4", D2, ["R4 Volume vs unit value"], YEAR, pv, "p Year")
+wb.param_action("Year from R5", D2, ["R5 Production volume"], YEAR, ufs, "p Year")
+wb.param_action("CFEM year from M1", D3, ["M1 HHI over time"], YEAR, con, "p CFEM Year")
+wb.param_action("Year from M6", D3, ["M6 CFEM per R$ of sales"], YEAR, amc, "p Year")
 wb.param_action("Substance from M3", D3, ["M3 Concentration table"], F("scope"), con, "p Substance")
 wb.param_action("Substance from M5", D3, ["M5 Mix change"], F("substance_group"), sub, "p Substance")
 wb.param_action("State from M4", D3, ["M4 Municipal concentration"], F("uf"), cfm, "p State")

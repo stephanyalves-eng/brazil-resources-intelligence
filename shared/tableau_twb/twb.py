@@ -254,6 +254,7 @@ class Sheet:
     axis_range: tuple | None = None         # (rows measure F, min, max) fixed axis
     row_labels: bool | None = None          # show row field labels (default: only for text tables)
     font_size: int = 10
+    tooltip_year: bool = False              # ATTR(year) on the tooltip, so a click can set a year parameter without splitting marks
     fmt_note: str | None = None
 
 
@@ -356,6 +357,8 @@ class Workbook:
                 return F(f.name, "attr")
             return f
         s.tooltip = [fix(f) for f in s.tooltip]
+        if s.tooltip_year and all(ds.ref(f) != ds.ref(F("year", "attr")) for f in s.tooltip):
+            s.tooltip.append(F("year", "attr"))
         if isinstance(s.tooltip_text, list):
             s.tooltip_text = [dict(r, field=fix(r["field"])) if "field" in r else r for r in s.tooltip_text]
             for r in s.tooltip_text:

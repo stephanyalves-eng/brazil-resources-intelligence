@@ -155,6 +155,8 @@ axes**, each with its own unit label.
 
 ## 7. Verification checklist (2026-11-18 build)
 
+> In the built workbook the YEAR box defaults to the latest year (2026) and the cards show the last month available in that year, so P1–P4 open on Sep 2026. Set YEAR = 2025 for the annual checks (P7, G1/G2, G5, U1).
+
 | Check | Expected |
 |---|---|
 | P1 Oil, m³/d | 748,985 m³/d (Sep 2026, PROVISIONAL tag) |

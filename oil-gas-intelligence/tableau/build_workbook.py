@@ -28,7 +28,7 @@ P = wb.params
 P.add("p Product", "string", "Oil", members=["Oil", "Natural gas", "NGL (LGN)"])
 P.add("p Unit Oil", "string", "bbl/d", members=["m3/d", "bbl/d"])
 P.add("p Window", "string", "Since 2000", members=["Since 2000", "Last 10 years", "Last 36 months"])
-P.add("p Year", "integer", 2025, members=list(range(2000, 2026)), fmt="n0;-0")
+P.add("p Year", "integer", 2026, members=list(range(2000, 2027)), fmt="n0;-0")
 ALL_UF = "All states"
 UF_NAMES = {r["uf"]: r["uf_name"] for r in csv.DictReader(open(HERE / "data" / "dim_uf.csv", encoding="utf-8"))}
 P.add("p State", "string", ALL_UF, members=[ALL_UF] + sorted(UF_NAMES))
@@ -136,6 +136,36 @@ for d, key in ((pu, "[uf]"), (pul, "[uf] + [location]")):
     d.calc("State Filter", f"{UF_ALL} OR [uf] = {{{{p State}}}}", "boolean")
     d.calc("Days", f"SUM([days_in_month]) / COUNTD({key})", "real", INT)
 pul.calc("Daily Avg (states)", "SUM([volume]) / {{Days}}", "real", INT)
+SEL = f'[product] = {{{{p Product}}}} AND ({UF_ALL} OR [uf] = {{{{p State}}}})'
+CONV = 'IF {{p Product}} = "Oil" AND {{p Unit Oil}} = "bbl/d" THEN ' + BBL + ' ELSE 1 END'
+pu.calc("In Selection", SEL, "boolean")
+pu.calc("Ref Month", "IF YEAR({{Latest Month}}) <= {{p Year}} THEN {{Latest Month}} ELSE MAKEDATE({{p Year}}, 12, 1) END", "date", role="dimension")
+pu.calc("Month Volume", f"{{FIXED [period_date] : SUM(IF {SEL} THEN [volume] END)}}", "real", INT)
+pu.calc("Month Days", "{FIXED [period_date] : MIN([days_in_month])}", "real", INT)
+pu.calc("Month Daily", "{{Month Volume}} / {{Month Days}}", "real", INT)
+pu.calc("KPI Daily", "MAX(IF [period_date] = {{Ref Month}} THEN {{Month Daily}} END)", "real", INT)
+pu.calc("KPI Daily Display", "{{KPI Daily}} * (" + CONV + ")", "real", INT)
+pu.calc("KPI Prev Daily", "MAX(IF [period_date] = DATEADD('month', -1, {{Ref Month}}) THEN {{Month Daily}} END)", "real", INT)
+pu.calc("KPI LY Daily", "MAX(IF [period_date] = DATEADD('month', -12, {{Ref Month}}) THEN {{Month Daily}} END)", "real", INT)
+pu.calc("KPI Daily MoM", "{{KPI Daily}} / {{KPI Prev Daily}} - 1", "real", YOY)
+pu.calc("KPI Volume MoM", "MAX(IF [period_date] = {{Ref Month}} THEN {{Month Volume}} END) / "
+        "MAX(IF [period_date] = DATEADD('month', -1, {{Ref Month}}) THEN {{Month Volume}} END) - 1", "real", YOY)
+pu.calc("KPI YoY", "{{KPI Daily}} / {{KPI LY Daily}} - 1", "real", YOY)
+pu.calc("KPI % of Peak", "{{KPI Daily}} / MAX(IF [period_date] <= {{Ref Month}} THEN {{Month Daily}} END)", "real", "p0%")
+pu.calc("Peak Label", 'IF {{KPI % of Peak}} >= 0.9999 THEN "new peak" ELSE "of the highest month up to then" END', "string")
+pu.calc("Provisional Label", 'IF MAX(IF [period_date] = {{Ref Month}} AND [is_provisional] THEN 1 END) = 1 THEN " · PROVISIONAL" END', "string")
+pu.calc("Ref Label", "UPPER(DATENAME('month', MAX({{Ref Month}}))) + \" \" + STR(YEAR(MAX({{Ref Month}})))", "string")
+pu.calc("Place Label", f'(IF {UF_ALL} THEN "BRAZIL" ELSE {{{{p State}}}} END)', "string")
+pu.calc("Change Arrow", 'IF {{KPI Daily MoM}} >= 0 THEN "▲ " ELSE "▼ " END', "string")
+pu.calc("YoY Arrow", 'IF {{KPI YoY}} >= 0 THEN "▲ " ELSE "▼ " END', "string")
+pu.calc("Unit Label", 'IF {{p Product}} = "Oil" AND {{p Unit Oil}} = "bbl/d" THEN "bbl/d" ELSEIF {{p Product}} = "Natural gas" '
+        'THEN "thousand m³/d" ELSE "m³/d" END', "string")
+pu.calc("In 36 Months", "[period_date] > DATEADD('month', -36, {{Ref Month}}) AND [period_date] <= {{Ref Month}}", "boolean")
+pu.calc("Is Ref Month", "[period_date] = {{Ref Month}}", "boolean")
+pu.calc("Daily Avg Sel", "SUM([volume]) / {{Days}} * (" + CONV + ")", "real", INT)
+pu.calc("Rolling 12M Sel", "SUM([rolling_12m_daily_avg]) * (" + CONV + ")", "real", INT)
+pu.calc("Annual YoY", "{{Daily Avg Sel}} / LOOKUP({{Daily Avg Sel}}, -1) - 1", "real", YOY)
+pu.calc("YoY Label Sel", "IF MIN([year]) = {{p Year}} THEN {{Annual YoY}} END", "real", YOY)
 pu.calc("State Highlight", f'IF {UF_ALL} THEN "All" ELSEIF [uf] = {{{{p State}}}} THEN "Selected" ELSE "Other" END', "string")
 for d, key in ((un, None), (ul, "[location]"), (uu, "[uf]"), (uul, "[uf] + [location]")):
     d.calc("Days", "SUM([days_in_month])" + (f" / COUNTD({key})" if key else ""), "real", INT)
@@ -184,40 +214,41 @@ def ttip(*parts):
 M = F("period_date", "tmn")
 Y = F("period_date", "yr")
 
-wb.sheet(name="P1 KPI Latest daily avg", ds=pn, mark="Text", bg=FOREST, filters=[(F("Is Product"), None)],
-         text=[F("Latest Month Label"), F("KPI Latest Daily Display"), F("Display Unit", "attr"), F("Provisional Label")],
-         label=[eyebrow("LATEST MONTH · ", SAGE), {"field": F("Latest Month Label"), "font": "Consolas", "size": 8, "color": SAGE},
-                {"text": " · ", "font": "Consolas", "size": 8, "color": SAGE}, {"field": F("Provisional Label"), "font": "Consolas", "size": 8, "color": "#E0B25C"}, {"br": True},
-                {"field": F("KPI Latest Daily Display"), "size": 24, "color": ON_FOREST}, {"br": True},
-                {"field": F("Display Unit", "attr"), "size": 9, "color": SAGE}, {"text": " · daily average", "size": 9, "color": SAGE}])
-wb.sheet(name="P2 KPI MoM", ds=pn, mark="Text", filters=[(F("Is Product"), None)],
-         text=[F("Change Arrow"), F("KPI Daily MoM"), F("KPI Volume MoM")],
+YR = F("year", kind="ok")
+SELF = [(F("In Selection"), None)]
+wb.sheet(name="P1 KPI Latest daily avg", ds=pu, mark="Text", bg=FOREST, filters=SELF,
+         text=[F("Ref Label"), F("KPI Daily Display"), F("Unit Label"), F("Provisional Label"), F("Place Label")],
+         label=[eyebrow("", SAGE), {"field": F("Ref Label"), "font": "Consolas", "size": 8, "color": SAGE},
+                {"text": " · ", "font": "Consolas", "size": 8, "color": SAGE}, {"field": F("Place Label"), "font": "Consolas", "size": 8, "color": SAGE},
+                {"text": " ", "font": "Consolas", "size": 8, "color": SAGE},
+                {"field": F("Provisional Label"), "font": "Consolas", "size": 8, "color": "#E0B25C"}, {"br": True},
+                {"field": F("KPI Daily Display"), "size": 24, "color": ON_FOREST}, {"br": True},
+                {"field": F("Unit Label"), "size": 9, "color": SAGE}, {"text": " · daily average", "size": 9, "color": SAGE}])
+wb.sheet(name="P2 KPI MoM", ds=pu, mark="Text", filters=SELF, text=[F("Change Arrow"), F("KPI Daily MoM"), F("KPI Volume MoM")],
          label=[eyebrow("MONTH ON MONTH (DAILY AVERAGE)"), {"br": True}, {"field": F("Change Arrow"), "size": 24},
                 {"field": F("KPI Daily MoM"), "size": 24}, {"br": True}, {"text": "volume MoM ", "size": 9, "color": INK3},
                 {"field": F("KPI Volume MoM"), "size": 9, "color": INK3}, {"text": " (month lengths differ)", "size": 9, "color": INK3}])
-wb.sheet(name="P3 KPI YoY", ds=pn, mark="Text", filters=[(F("Is Product"), None)], text=[F("YoY Arrow"), F("KPI YoY")],
+wb.sheet(name="P3 KPI YoY", ds=pu, mark="Text", filters=SELF, text=[F("YoY Arrow"), F("KPI YoY")],
          label=[eyebrow("YEAR ON YEAR"), {"br": True}, {"field": F("YoY Arrow"), "size": 24}, {"field": F("KPI YoY"), "size": 24},
                 {"br": True}, {"text": "same month, previous year", "size": 9, "color": INK3}])
-wb.sheet(name="P4 KPI % of peak", ds=pn, mark="Text", filters=[(F("Is Product"), None)], text=[F("KPI % of Peak"), F("Peak Label")],
+wb.sheet(name="P4 KPI % of peak", ds=pu, mark="Text", filters=SELF, text=[F("KPI % of Peak"), F("Peak Label")],
          label=[eyebrow("HISTORICAL PEAK (DAILY AVERAGE)"), {"br": True}, {"field": F("KPI % of Peak"), "size": 24, "color": F700},
                 {"br": True}, {"field": F("Peak Label"), "size": 9, "color": INK3}])
-wb.sheet(name="P5 Monthly volume", ds=pn, mark="Bar", cols=[M], rows=[F("volume", "sum")], color=F("Is Latest"), color_map=TF,
-         filters=[(F("Is Product"), None), (F("Last 36 Months"), None)], title="Monthly volume · last 36 months (m³ / thousand m³)",
-         tooltip=[F("days_in_month", "sum"), F("Daily Avg")],
-         tooltip_text=ttip(M, ": ", F("volume", "sum"), " · ", F("days_in_month", "sum"), " days · daily ", F("Daily Avg")))
-wb.sheet(name="P6 Historical daily average", ds=pn, mark="Line", cols=[M], rows=[F("Multiple Values")],
-         measure_values=[F("Daily Avg Display"), F("Rolling 12M Display")],
-         color_map={"Daily Avg Display": CONTEXT, "Rolling 12M Display": F700},
-         filters=[(F("Is Product"), None), (F("In Window"), None)], title="Historical daily average with 12-month rolling mean",
-         tooltip_text=ttip(M, ": daily ", F("Daily Avg Display"), " · 12M ", F("Rolling 12M Display")))
-wb.sheet(name="P7 Annual summary", ds=ann, mark="Bar", cols=[F("year", kind="ok")], rows=[F("annual_daily_avg", "sum")],
-         color=F("Is Selected Year"), color_map={"true": F700, "false": F600},
-         filters=[(F("Is Product"), None), (F("Since 2000"), None)], text=[F("YoY Label", "sum")], labels=True,
-         axis_titles={F("annual_daily_avg", "sum"): "daily average"},
-         title="Annual daily average (click a year to set p Year)",
-         tooltip=[F("unit_daily", "attr"), F("offshore_share", "sum")],
-         tooltip_text=ttip(F("year", kind="ok"), ": ", F("annual_daily_avg", "sum"), " ", F("unit_daily", "attr"), " · YoY ", F("yoy", "sum"),
-                           " · offshore ", F("offshore_share", "sum")))
+wb.sheet(name="P5 Monthly volume", ds=pu, mark="Bar", cols=[M], rows=[F("volume", "sum")], color=F("Is Ref Month"), color_map=TF,
+         filters=SELF + [(F("In 36 Months"), None)], tooltip_year=True, axis_titles={F("volume", "sum"): ""},
+         title="Monthly volume · 36 months to the reference month (m³ / thousand m³) · click a month",
+         tooltip=[F("Daily Avg Sel")], tooltip_text=ttip(M, ": ", F("volume", "sum"), " · daily ", F("Daily Avg Sel")))
+wb.sheet(name="P6 Historical daily average", ds=pu, mark="Line", cols=[M], rows=[F("Multiple Values")], tooltip_year=True,
+         measure_values=[F("Daily Avg Sel"), F("Rolling 12M Sel")],
+         color_map={"Daily Avg Sel": CONTEXT, "Rolling 12M Sel": F700},
+         filters=SELF + [(F("In Window"), None)], title="Historical daily average with 12-month rolling mean · click a point to set the year",
+         tooltip_text=ttip(M, ": daily ", F("Daily Avg Sel"), " · 12M ", F("Rolling 12M Sel")))
+wb.sheet(name="P7 Annual summary", ds=pu, mark="Bar", cols=[YR], rows=[F("Daily Avg Sel")],
+         color=F("Is Selected Year"), color_map={"true": F700, "false": SAGE},
+         filters=SELF + [(F("year"), list(range(2000, 2027)))], text=[F("YoY Label Sel")], labels=True,
+         axis_titles={F("Daily Avg Sel"): "daily average"},
+         title="Annual daily average (2026 = year to date) · click a year",
+         tooltip=[F("Annual YoY")], tooltip_text=ttip(YR, ": ", F("Daily Avg Sel"), " · YoY ", F("Annual YoY")))
 
 wb.sheet(name="G1 State share map", ds=pu, mark="Multipolygon", geo=F("uf"), color=F("Share (recomputed)"), color_seq=SEQ,
          filters=[(F("Is Product"), None), (F("Is Selected Year"), None)], title="State share of national production · click a state",
@@ -229,11 +260,12 @@ wb.sheet(name="G2 State ranking", ds=pu, mark="Bar", rows=[F("uf_name")], cols=[
          title="State ranking for the selected year · click a state", axis_titles={F("volume", "sum"): "volume (m³ / thousand m³)"},
          tooltip_text=ttip(F("uf_name"), ": ", F("volume", "sum"), " · ", F("Share (recomputed)")))
 wb.sheet(name="G3 Onshore vs offshore", ds=pul, mark="Area", cols=[M], rows=[F("Daily Avg (states)")], color=F("location"),
+         tooltip_year=True,
          color_map={"Offshore": F700, "Onshore": SAGE}, filters=[(F("Is Product"), None), (F("In Window"), None), (F("State Filter"), None)],
          title="Onshore vs offshore · daily average (selected state)", axis_titles={F("Daily Avg (states)"): ""},
          tooltip_text=ttip(F("location"), " ", M, ": ", F("Daily Avg (states)")))
 wb.sheet(name="G4 State trends", ds=pu, mark="Line", cols=[M], rows=[F("rolling_12m_daily_avg", "sum")], color=F("State Focus"),
-         color_map=FOCUS_COLORS, detail=[F("uf_name")], filters=[(F("Is Product"), None), (F("In Window"), None), (F("State Filter"), None)],
+         color_map=FOCUS_COLORS, detail=[F("uf_name")], tooltip_year=True, filters=[(F("Is Product"), None), (F("In Window"), None), (F("State Filter"), None)],
          title="State trends · 12-month rolling daily average", axis_titles={F("rolling_12m_daily_avg", "sum"): ""},
          tooltip_text=ttip(F("uf_name"), " ", M, ": ", F("rolling_12m_daily_avg", "sum")))
 wb.sheet(name="G5 Geographic HHI", ds=hhi, mark="Line", cols=[F("year", kind="ok")], rows=[F("hhi", "sum")], mark_color=F700,
@@ -275,12 +307,14 @@ wb.sheet(name="U1 Gas balance", ds=uu, filters=[(F("State Filter"), None)], mark
          tooltip_text=ttip(Y, ": reinjected ", F("Reinjection Rate"), ", available ", F("Available Rate"), ", own use ", F("Own Use Rate"),
                            ", flared ", F("Flaring Rate")))
 wb.sheet(name="U2 Production vs reinjection", ds=uu, filters=[(F("State Filter"), None)], mark="Line", cols=[M], rows=[F("Multiple Values")],
+         tooltip_year=True,
          measure_values=[F("Gas Production per Day"), F("Reinjection per Day")],
          color_map={"Gas Production per Day": F600, "Reinjection per Day": F700},
          title="Gas produced vs reinjected · thousand m³/d",
          tooltip_text=ttip(M, ": produced ", F("Gas Production per Day"), ", reinjected ", F("Reinjection per Day"), " (thousand m³/d)"))
 YC = F("period_date", "tyr")
 wb.sheet(name="U3 Flaring rate", ds=uu, filters=[(F("State Filter"), None)], mark="Line", cols=[YC], rows=[F("Flaring Rate")], mark_color=WARN,
+         tooltip_year=True,
          title="Flaring rate (share of gas produced)", axis_titles={F("Flaring Rate"): ""},
          tooltip=[F("Flaring per Day")], tooltip_text=ttip(YC, ": ", F("Flaring Rate"), " · ", F("Flaring per Day"), " thousand m³/d"))
 wb.sheet(name="U4 Offshore vs onshore rates", ds=uul, mark="Bar", rows=[F("location"), F(":Measure Names")], cols=[F("Multiple Values")],
@@ -290,6 +324,7 @@ wb.sheet(name="U4 Offshore vs onshore rates", ds=uul, mark="Bar", rows=[F("locat
          filters=[(F("Is Selected Year"), None), (F("State Filter"), None)], title="Offshore vs onshore rates · selected year and state",
          tooltip_text=ttip(F("location"), " ", F("year", "attr"), ": reinjected ", F("Reinjection Rate"), ", flared ", F("Flaring Rate")))
 wb.sheet(name="U5 Balance quality", ds=uu, filters=[(F("State Filter"), None)], mark="Bar", cols=[M], rows=[F("Balance Gap %")], color=F("Outside Band"),
+         tooltip_year=True,
          color_map={"true": ERR, "false": CONTEXT}, reflines=[-0.005, 0.005], axis_range=(F("Balance Gap %"), -0.02, 0.02),
          axis_titles={F("Balance Gap %"): ""}, title="Balance gap · band ±0.5 % (axis clipped at ±2 %)",
          tooltip_text=ttip(M, ": gap ", F("Balance Gap %")))
@@ -380,7 +415,8 @@ p3 = p2 + 300 + GAP
 wb.dashboard(PAGES[0][0], W, H, header("Production Overview", PAGES[0][0]) + [
     sheet("P1 KPI Latest daily avg", 0, 3, TOP, 104, False, FOREST), sheet("P2 KPI MoM", 3, 3, TOP, 104, False),
     sheet("P3 KPI YoY", 6, 3, TOP, 104, False), sheet("P4 KPI % of peak", 9, 3, TOP, 104, False),
-    note("Record month in Sep 2026; growth has accelerated since mid-2022 after a 2016–2022 plateau.", 0, 12, p1, 22),
+    note("Cards show the last month available in the selected year (Sep 2026 is the record month). Click any chart to change the year; "
+         "product and state boxes apply to every card and chart on this page.", 0, 12, p1, 22),
     sheet("P6 Historical daily average", 0, 12, p2, 300),
     sheet("P5 Monthly volume", 0, 7, p3, BOT - p3), sheet("P7 Annual summary", 7, 5, p3, BOT - p3)] + footer(), PAGE)
 g1 = TOP + 26
@@ -435,7 +471,14 @@ for i, (k, v) in enumerate(METH):
 wb.dashboard(PAGES[4][0], W, H, header("Methodology", PAGES[4][0]) + body([sheet("D1 Sources", 0, 12, Y0, 330)] + mz) + footer(), PAGE)
 
 # ---- interactions (guide §6) ------------------------------------------------------------------------
-wb.param_action("Select year (P7)", PAGES[0][0], ["P7 Annual summary"], F("year", kind="ok"), ann, "p Year")
+for _sh in ("P5 Monthly volume", "P6 Historical daily average"):
+    wb.param_action(f"Year from {_sh[:2]}", PAGES[0][0], [_sh], F("year", "attr"), pu, "p Year")
+wb.param_action("Year from P7", PAGES[0][0], ["P7 Annual summary"], F("year", kind="ok"), pu, "p Year")
+wb.param_action("Year from G3", PAGES[1][0], ["G3 Onshore vs offshore"], F("year", "attr"), pul, "p Year")
+wb.param_action("Year from G4", PAGES[1][0], ["G4 State trends"], F("year", "attr"), pu, "p Year")
+wb.param_action("Year from G5", PAGES[1][0], ["G5 Geographic HHI"], F("year", kind="ok"), hhi, "p Year")
+for _sh in ("U2 Production vs reinjection", "U3 Flaring rate", "U5 Balance quality"):
+    wb.param_action(f"Year from {_sh[:2]}", PAGES[3][0], [_sh], F("year", "attr"), uu, "p Year")
 wb.param_action("Select year (U1)", PAGES[3][0], ["U1 Gas balance"], Y, uu, "p Year")
 wb.param_action("State from map (G1)", PAGES[1][0], ["G1 State share map"], F("uf"), pu, "p State")
 wb.param_action("State from ranking (G2)", PAGES[1][0], ["G2 State ranking"], F("uf"), pu, "p State")
